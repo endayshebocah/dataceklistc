@@ -1,0 +1,5 @@
+Rekapan Pembayaran CatringAplikasi web berbasis React dan Firebase untuk mengelola pencatatan kehadiran dan rekapan pembayaran katering harian secara real-time.Fitur UtamaLive Sync & Real-time Collaboration: Sinkronisasi data otomatis dengan Firebase Firestore.Manajemen Perhitungan Otomatis: Kalkulasi total porsi makan pagi & sore serta akumulasi biaya (Rp 13.000 / porsi).Tanda Tangan Digital: Fitur tanda tangan langsung di layar (touch & mouse supported).Arsip & Export: Simpan riwayat ke cloud, unduh ke Excel (.csv), dan cetak langsung.Mode Admin: Dilindungi otentikasi PIN untuk mengedit data dan mengelola absensi harian.Cara Menjalankan di LokalPastikan Anda sudah menginstal Node.js.Ekstrak atau kloning repositori ini.Install dependensi:npm install
+
+Jalankan server development:npm run dev
+
+Buka http://localhost:3000 di browser Anda.
