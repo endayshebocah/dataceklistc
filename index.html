@@ -1772,11 +1772,15 @@
                     if (!isViewingArchiveMode) {
                         if (data.dailyOrders && typeof data.dailyOrders === 'object') {
                             dailyOrdersData = data.dailyOrders;
-                            renderTable([]);
+                            if (!activeDailyOrderKey) {
+                                renderTable([]);
+                            }
                         }
                         if (data.statusMarks && typeof data.statusMarks === 'object') {
                             statusMarksMap = data.statusMarks;
-                            renderTable([]);
+                            if (!activeDailyOrderKey) {
+                                renderTable([]);
+                            }
                         }
                         if (data.periodRange && typeof data.periodRange === 'object') {
                             periodRange = {
@@ -3735,6 +3739,18 @@
 
         window.handleDailyOrderFocus = function(dayKey) {
             activeDailyOrderKey = dayKey;
+            const inputEl = document.getElementById(`dailyOrderInput_${dayKey}`);
+            const tableContainer = document.querySelector('#adminWorkspace .table-container');
+            if (tableContainer) {
+                tableContainer.classList.add('pb-48');
+            }
+            if (inputEl) {
+                setTimeout(() => {
+                    try {
+                        inputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                    } catch (_) {}
+                }, 120);
+            }
         };
 
         window.handleDailyOrderBlur = async function(dayKey, inputEl) {
@@ -3748,6 +3764,10 @@
 
             if (activeDailyOrderKey === dayKey) {
                 activeDailyOrderKey = null;
+            }
+            const tableContainer = document.querySelector('#adminWorkspace .table-container');
+            if (tableContainer) {
+                tableContainer.classList.remove('pb-48');
             }
 
             if (currentUser && !isViewingArchiveMode) {
@@ -4343,4 +4363,4 @@
         } catch (_) {}
     </script>
 </body>
-                        </html>
+    </html>
