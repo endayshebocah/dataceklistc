@@ -630,6 +630,11 @@
                     <span>⬇️</span>
                     <span>Download Template CSV</span>
                 </button>
+
+                <button type="button" id="btnDeleteAllActiveRows" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
+                    <span>🗑️</span>
+                    <span>Hapus Semua Baris Kolom</span>
+                </button>
             </div>
 
             <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
@@ -2945,6 +2950,64 @@
             csvFileInput.click();
         });
 
+        document.getElementById('btnDeleteAllActiveRows').addEventListener('click', () => {
+            closeNavDrawer();
+
+            if (isViewingArchiveMode && isArchiveReadOnly) {
+                showToast("Arsip dibuka dalam mode Lihat Saja (Read-Only)", true);
+                return;
+            }
+
+            if (participantsData.length === 0) {
+                showToast("Tidak ada baris data aktif untuk dihapus", true);
+                return;
+            }
+
+            const totalRows = participantsData.length;
+
+            openConfirmPopup({
+                title: 'Hapus Semua Baris Kolom?',
+                message: 'Seluruh baris peserta aktif beserta ceklis, tanda tangan, keterangan, dan pesanan harian akan dihapus.',
+                detail: `Total Baris Data Aktif: ${totalRows} peserta`,
+                confirmText: 'Ya, Hapus Semua',
+                confirmClass: 'bg-rose-600 hover:bg-rose-700 text-white',
+                onConfirm: async () => {
+                    setConnectionStatus('SYNCING');
+                    try {
+                        if (!isViewingArchiveMode && currentUser) {
+                            const batch = writeBatch(db);
+                            participantsData.forEach(p => {
+                                batch.delete(getParticipantDocRef(p.id));
+                            });
+                            await batch.commit();
+
+                            clearedAfterArchive = true;
+                            hasSeededInitialData = true;
+                            await setDoc(getMetaDocRef(), {
+                                statusMarks: {},
+                                dailyOrders: {},
+                                clearedAfterArchive: true,
+                                updatedAt: Date.now()
+                            }, { merge: true });
+                        }
+
+                        previousChecksSnapshot = {};
+                        participantsData = [];
+                        statusMarksMap = {};
+                        dailyOrdersData = {};
+                        portalSelectedParticipant = null;
+                        renderTable([]);
+
+                        setConnectionStatus(currentUser ? 'ONLINE' : 'OFFLINE');
+                        showToast("Semua baris kolom data aktif telah dihapus");
+                    } catch (_) {
+                        setConnectionStatus('OFFLINE');
+                        showToast("Gagal menghapus semua baris data aktif", true);
+                    }
+                }
+            });
+        });
+
         csvFileInput.addEventListener('change', async (e) => {
             const file = e.target.files && e.target.files[0];
             csvFileInput.value = '';
@@ -4284,4 +4347,4 @@
         } catch (_) {}
     </script>
 </body>
-    </html>
+                    </html>
