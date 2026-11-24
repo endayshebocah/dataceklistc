@@ -587,9 +587,11 @@
             </div>
 
             <div class="space-y-2">
-                <button type="button" id="btnOpenBulkModal" class="w-auto inline-flex items-center gap-1 bg-slate-700 hover:bg-slate-800 text-white font-bold text-[10px] py-1 px-2.5 rounded-md text-left transition cursor-pointer">
-                    Tambah Peserta Baru
-                </button>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <button type="button" id="btnOpenBulkModal" class="w-auto inline-flex items-center gap-1 bg-slate-700 hover:bg-slate-800 text-white font-bold text-[10px] py-1 px-2.5 rounded-md text-left transition cursor-pointer">
+                        Tambah Peserta Baru
+                    </button>
+                </div>
 
                 <button type="button" id="btnOpenAdminModal" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
                     <span>Menu Admin</span>
@@ -601,9 +603,9 @@
                     <span id="lockNameColLabel">Kunci Kolom Nama Modal</span>
                 </button>
 
-                <button type="button" id="btnCheckAllBoxes" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
+                <button type="button" id="btnOpenManageChecksModal" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
                     <span>☑️</span>
-                    <span>Ceklis Semua Kotak</span>
+                    <span>Atur Ceklis</span>
                 </button>
 
                 <button type="button" id="btnDrawerPrint" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
@@ -627,10 +629,6 @@
                 <button type="button" id="btnDrawerDownloadTemplate" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
                     <span>⬇️</span>
                     <span>Download Template CSV</span>
-                </button>
-
-                <button type="button" id="btnOpenResetModal" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-bold text-xs py-2 px-3 rounded-lg text-left transition cursor-pointer">
-                    ↺ Reset Semua Centang
                 </button>
             </div>
 
@@ -972,6 +970,30 @@
         </div>
     </div>
 
+    <div id="manageChecksModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75">
+        <div class="bg-white border border-slate-300 rounded-xl max-w-xs w-full p-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-200">
+                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Atur Ceklis</h3>
+                <button type="button" id="btnCloseManageChecksModal" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-600 mb-3">
+                Pilih tindakan ceklis untuk seluruh peserta pada periode aktif:
+            </p>
+            <div class="space-y-2">
+                <button type="button" id="btnTriggerCheckAllFromModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <span>☑️</span>
+                    <span>Ceklis Semua</span>
+                </button>
+                <button type="button" id="btnTriggerClearAllFromModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <span>↺</span>
+                    <span>Hapus Ceklis</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="editParticipantModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900">
         <div class="bg-white border border-slate-800 rounded-md max-w-md w-full p-4 shadow-xl">
             <h3 class="text-sm font-extrabold text-slate-900 uppercase mb-2">Ubah Nama Peserta</h3>
@@ -1270,6 +1292,7 @@
         function getParticipantAllowanceDayCount(checksObj) {
             if (!checksObj || typeof checksObj !== 'object') return 0;
             return DAY_COLUMNS.reduce((acc, col) => {
+                if (col.key === 'd7') return acc;
                 const hasMorning = !!checksObj[col.slot1];
                 const hasEvening = !!checksObj[col.slot2];
                 return acc + ((hasMorning || hasEvening) ? 1 : 0);
@@ -2783,12 +2806,29 @@
             );
         });
 
-        document.getElementById('btnCheckAllBoxes').addEventListener('click', async () => {
+        const manageChecksModal = document.getElementById('manageChecksModal');
+        function openManageChecksModal() {
             closeNavDrawer();
+            manageChecksModal.classList.remove('hidden');
+            manageChecksModal.classList.add('flex');
+            lucide.createIcons();
+        }
+        function closeManageChecksModal() {
+            manageChecksModal.classList.add('hidden');
+            manageChecksModal.classList.remove('flex');
+        }
+        document.getElementById('btnOpenManageChecksModal').addEventListener('click', openManageChecksModal);
+        document.getElementById('btnCloseManageChecksModal').addEventListener('click', closeManageChecksModal);
+        manageChecksModal.addEventListener('click', (e) => {
+            if (e.target === manageChecksModal) closeManageChecksModal();
+        });
+
+        document.getElementById('btnTriggerCheckAllFromModal').addEventListener('click', () => {
+            closeManageChecksModal();
             if (!currentUser || participantsData.length === 0) return;
 
             openConfirmPopup({
-                title: 'Konfirmasi Ceklis Semua Kotak',
+                title: 'Konfirmasi Ceklis Semua',
                 message: 'Centang seluruh kotak Pagi & Sore untuk semua peserta?',
                 detail: `Total Peserta: ${participantsData.length} orang`,
                 confirmText: 'Ya, Ceklis Semua',
@@ -2811,6 +2851,16 @@
                     }
                 }
             });
+        });
+
+        document.getElementById('btnTriggerClearAllFromModal').addEventListener('click', () => {
+            closeManageChecksModal();
+            if (participantsData.length === 0) {
+                showToast("Belum ada data peserta untuk di-reset", true);
+                return;
+            }
+            resetModal.classList.remove('hidden');
+            resetModal.classList.add('flex');
         });
 
         document.getElementById('btnDrawerPrint').addEventListener('click', () => {
@@ -3779,7 +3829,7 @@
         });
 
         const resetModal = document.getElementById('resetModal');
-        document.getElementById('btnOpenResetModal').addEventListener('click', () => {
+        document.getElementById('btnOpenResetModal')?.addEventListener('click', () => {
             closeNavDrawer();
             if (participantsData.length === 0) {
                 showToast("Belum ada data peserta untuk di-reset", true);
