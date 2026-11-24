@@ -493,7 +493,7 @@
                         id="btnSaveArchiveData"
                         class="btn-3d bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
                     >
-                        <span>SIMPAN DATA</span>
+                        <span id="btnSaveArchiveLabel">SIMPAN DATA</span>
                     </button>
                     <button 
                         type="button" 
@@ -3031,12 +3031,89 @@
         // =====================================================================
         // SIMPAN ARSIP & MODAL ARSIP REKAPAN
         // =====================================================================
+        function updateSaveArchiveButtonLabel() {
+            const labelEl = document.getElementById('btnSaveArchiveLabel');
+            const btnSaveArchive = document.getElementById('btnSaveArchiveData');
+            if (!labelEl || !btnSaveArchive) return;
+
+            if (isViewingArchiveMode && !isArchiveReadOnly) {
+                labelEl.textContent = 'Simpan Perubahan';
+                btnSaveArchive.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                btnSaveArchive.classList.add('bg-amber-600', 'hover:bg-amber-700');
+            } else {
+                labelEl.textContent = 'SIMPAN DATA';
+                btnSaveArchive.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+                btnSaveArchive.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+            }
+        }
+
+        async function saveEditedArchiveChanges() {
+            if (!activeArchiveId) return;
+
+            let totalChecks = 0;
+            const updatedRows = participantsData.map((p, idx) => {
+                const count = ALL_SLOT_KEYS.reduce((acc, k) => acc + (p.checks && p.checks[k] ? 1 : 0), 0);
+                totalChecks += count;
+                return {
+                    id: p.id,
+                    no: idx + 1,
+                    name: p.name,
+                    count,
+                    rate: UNIT_RATE,
+                    total: count * UNIT_RATE,
+                    ket: p.ket || '',
+                    ttdDataUrl: p.ttdDataUrl || '',
+                    createdAt: p.createdAt || (Date.now() + idx)
+                };
+            });
+
+            const currentPeriodText = formatPeriodLabel(periodRange.start, periodRange.end);
+            const totalAmount = totalChecks * UNIT_RATE;
+
+            setConnectionStatus('SYNCING');
+            try {
+                const payload = {
+                    periodLabel: currentPeriodText,
+                    startDate: periodRange.start || '',
+                    endDate: periodRange.end || '',
+                    totalParticipants: updatedRows.length,
+                    totalChecks,
+                    totalAmount,
+                    rows: updatedRows,
+                    dailyOrdersSnapshot: { ...dailyOrdersData },
+                    statusMarksSnapshot: JSON.parse(JSON.stringify(statusMarksMap || {})),
+                    updatedAt: Date.now()
+                };
+
+                archivesList = archivesList.map(arc => arc.id === activeArchiveId ? { ...arc, ...payload } : arc);
+                saveArchivesLocalBackup(archivesList);
+                renderArchiveList();
+
+                if (currentUser) {
+                    await updateDoc(getArchiveDocRef(activeArchiveId), payload);
+                }
+
+                setConnectionStatus('ONLINE');
+                showToast("Perubahan data arsip berhasil disimpan");
+            } catch (_) {
+                setConnectionStatus('OFFLINE');
+                showToast("Gagal menyimpan perubahan arsip", true);
+            }
+        }
+
         function attachSaveArchiveButtonListener() {
             const btnSaveArchive = document.getElementById('btnSaveArchiveData');
-            if (!btnSaveArchive || btnSaveArchive.dataset.bound === 'true') return;
+            if (!btnSaveArchive) return;
+            updateSaveArchiveButtonLabel();
+            if (btnSaveArchive.dataset.bound === 'true') return;
             btnSaveArchive.dataset.bound = 'true';
 
             btnSaveArchive.addEventListener('click', async () => {
+                if (isViewingArchiveMode && !isArchiveReadOnly) {
+                    await saveEditedArchiveChanges();
+                    return;
+                }
+
                 if (!currentUser || participantsData.length === 0) {
                     showToast("Tidak ada data peserta untuk disimpan", true);
                     return;
@@ -3207,6 +3284,7 @@
             }
 
             renderTable([]);
+            updateSaveArchiveButtonLabel();
             showToast(
                 readOnly
                     ? `Membuka arsip (${formatArchiveRangeDisplay(arc)}) dalam mode Lihat Saja (Read-Only)`
@@ -3268,6 +3346,7 @@
                         activeArchiveId = null;
                         isArchiveReadOnly = false;
                         clearedAfterArchive = false;
+                        updateSaveArchiveButtonLabel();
                         dailyOrdersData = arc.dailyOrdersSnapshot ? { ...arc.dailyOrdersSnapshot } : {};
                         statusMarksMap = arc.statusMarksSnapshot ? JSON.parse(JSON.stringify(arc.statusMarksSnapshot)) : {};
                         if (arc.startDate || arc.endDate) {
@@ -3283,9 +3362,20 @@
                             updatedAt: Date.now()
                         }, { merge: true });
 
+                        // Hapus arsip yang baru dipulihkan agar tidak lagi muncul di menu arsip
+                        archivesList = archivesList.filter(item => item.id !== archiveId);
+                        saveArchivesLocalBackup(archivesList);
+                        const menuLabel = document.getElementById('archiveMenuLabel');
+                        if (menuLabel) menuLabel.textContent = `Arsip Rekapan (${archivesList.length})`;
+                        renderArchiveList();
+
+                        try {
+                            await deleteDoc(getArchiveDocRef(archiveId));
+                        } catch (_) {}
+
                         closeArchiveModal();
                         setConnectionStatus('ONLINE');
-                        showToast(`Arsip "${formatArchiveRangeDisplay(arc)}" berhasil dipulihkan ke aktif`);
+                        showToast(`Arsip "${formatArchiveRangeDisplay(arc)}" dipulihkan ke aktif & dihapus dari arsip`);
                     } catch (_) {
                         setConnectionStatus('OFFLINE');
                         showToast("Gagal memulihkan arsip ke aktif", true);
@@ -4134,4 +4224,4 @@
         } catch (_) {}
     </script>
 </body>
-                    </html>
+    </html>
