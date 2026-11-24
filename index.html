@@ -1208,8 +1208,13 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const UNIT_RATE = 15000;
+        const CATERING_UNIT_RATE = 13000;
+        const ALLOWANCE_UNIT_RATE = 15000;
         const DEFAULT_FALLBACK_PIN = '11111';
+
+        function getActiveUnitRate() {
+            return activeAdminSubTab === 'UANG_JAJAN' ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
+        }
 
         let currentUser = null;
         let participantsData = [];
@@ -2725,7 +2730,7 @@
             openConfirmPopup({
                 title: 'Rekap Uang Jajan (Rp 15.000 / Hari)',
                 message: 'Ringkasan perhitungan uang jajan seluruh peserta berdasarkan hari ceklis aktif (pagi/sore dalam 1 hari dihitung 1):',
-                detail: `${participantsData.length} Peserta • ${totalAllowanceDaysAll} Hari • Total ${formatRupiah(totalAllowanceDaysAll * UNIT_RATE)}`,
+                detail: `${participantsData.length} Peserta • ${totalAllowanceDaysAll} Hari • Total ${formatRupiah(totalAllowanceDaysAll * ALLOWANCE_UNIT_RATE)}`,
                 confirmText: 'Tutup Ringkasan',
                 confirmClass: 'bg-indigo-600 hover:bg-indigo-700 text-white',
                 onConfirm: () => {}
@@ -2828,11 +2833,13 @@
         });
 
         function exportTableToCsv() {
+            const activeRate = getActiveUnitRate();
+            const rateLabel = activeRate.toLocaleString('id-ID');
             const dayHeaders = DAY_COLUMNS.flatMap((c, i) => [
                 `${c.full} PAGI (${WEEK_DATES[i].dateLabel})`,
                 `${c.full} SORE (${WEEK_DATES[i].dateLabel})`
             ]);
-            const headers = ['NO', 'NAMA PESERTA', ...dayHeaders, 'JMLH', 'RP 15.000', 'TOTAL', 'TTD', 'KET'];
+            const headers = ['NO', 'NAMA PESERTA', ...dayHeaders, 'JMLH', `RP ${rateLabel}`, 'TOTAL', 'TTD', 'KET'];
             const rows = participantsData.map((p, idx) => {
                 let count = 0;
                 const dayCells = DAY_COLUMNS.flatMap(col => {
@@ -2847,8 +2854,8 @@
                     `"${p.name.replace(/"/g, '""')}"`,
                     ...dayCells,
                     count,
-                    UNIT_RATE,
-                    count * UNIT_RATE,
+                    activeRate,
+                    count * activeRate,
                     p.ttdDataUrl ? 'SUDAH TTD' : 'BELUM TTD',
                     `"${(p.ket || '').replace(/"/g, '""')}"`
                 ].join(',');
@@ -3050,6 +3057,7 @@
         async function saveEditedArchiveChanges() {
             if (!activeArchiveId) return;
 
+            const activeRate = getActiveUnitRate();
             let totalChecks = 0;
             const updatedRows = participantsData.map((p, idx) => {
                 const count = ALL_SLOT_KEYS.reduce((acc, k) => acc + (p.checks && p.checks[k] ? 1 : 0), 0);
@@ -3059,8 +3067,8 @@
                     no: idx + 1,
                     name: p.name,
                     count,
-                    rate: UNIT_RATE,
-                    total: count * UNIT_RATE,
+                    rate: activeRate,
+                    total: count * activeRate,
                     ket: p.ket || '',
                     ttdDataUrl: p.ttdDataUrl || '',
                     createdAt: p.createdAt || (Date.now() + idx)
@@ -3068,8 +3076,7 @@
             });
 
             const currentPeriodText = formatPeriodLabel(periodRange.start, periodRange.end);
-            const totalAmount = totalChecks * UNIT_RATE;
-
+            const totalAmount = totalChecks * activeRate;
             setConnectionStatus('SYNCING');
             try {
                 const payload = {
@@ -3127,8 +3134,8 @@
                         no: idx + 1,
                         name: p.name,
                         count,
-                        rate: UNIT_RATE,
-                        total: count * UNIT_RATE,
+                        rate: CATERING_UNIT_RATE,
+                        total: count * CATERING_UNIT_RATE,
                         ket: p.ket || '',
                         ttdDataUrl: p.ttdDataUrl || ''
                     };
@@ -3139,7 +3146,7 @@
                 openConfirmPopup({
                     title: 'Konfirmasi Simpan Arsip Rekapan',
                     message: 'Simpan snapshot data rekapitulasi ke Arsip Rekapan lalu kosongkan semua nama, ceklis, TTD, KET, dan pesanan harian?',
-                    detail: `Periode: ${currentPeriodText} • Peserta: ${participantsData.length} • Total: ${formatRupiah(totalChecks * UNIT_RATE)}`,
+                    detail: `Periode: ${currentPeriodText} • Peserta: ${participantsData.length} • Total: ${formatRupiah(totalChecks * CATERING_UNIT_RATE)}`,
                     confirmText: 'Ya, Simpan & Kosongkan',
                     confirmClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
                     onConfirm: async () => {
@@ -3153,7 +3160,7 @@
                                 savedBy: loggedInAdminName,
                                 totalParticipants: participantsData.length,
                                 totalChecks,
-                                totalAmount: totalChecks * UNIT_RATE,
+                                totalAmount: totalChecks * CATERING_UNIT_RATE,
                                 rows: snapshotRows,
                                 dailyOrdersSnapshot: { ...dailyOrdersData },
                                 statusMarksSnapshot: JSON.parse(JSON.stringify(statusMarksMap || {}))
@@ -3167,7 +3174,7 @@
                                 savedBy: loggedInAdminName,
                                 totalParticipants: participantsData.length,
                                 totalChecks,
-                                totalAmount: totalChecks * UNIT_RATE,
+                                totalAmount: totalChecks * CATERING_UNIT_RATE,
                                 rows: snapshotRows,
                                 dailyOrdersSnapshot: { ...dailyOrdersData },
                                 statusMarksSnapshot: JSON.parse(JSON.stringify(statusMarksMap || {}))
@@ -3644,6 +3651,7 @@
         };
 
         function recomputeDailyOrdersFooter() {
+            const activeRate = getActiveUnitRate();
             let totalOrdersSum = 0;
             DAY_COLUMNS.forEach(col => {
                 const rawVal = dailyOrdersData[col.key] || '';
@@ -3652,7 +3660,7 @@
             const jmlhCell = document.getElementById('dailyOrdersJmlhCell');
             const totalRpCell = document.getElementById('dailyOrdersTotalRpCell');
             if (jmlhCell) jmlhCell.textContent = String(totalOrdersSum);
-            if (totalRpCell) totalRpCell.textContent = formatRupiah(totalOrdersSum * UNIT_RATE);
+            if (totalRpCell) totalRpCell.textContent = formatRupiah(totalOrdersSum * activeRate);
         }
 
         window.openTtdPreview = function(name, dataUrl) {
@@ -3869,6 +3877,8 @@
             if (!headerRow || !subHeaderRow || !tbody || !tfoot) return;
 
             const isAllowanceTab = activeAdminSubTab === 'UANG_JAJAN';
+            const activeRate = isAllowanceTab ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
+            const rateColumnHeader = isAllowanceTab ? 'RP 15.000' : 'RP 13.000';
 
             let headerHtml = `
                 <th rowspan="2" class="sticky-corner-no w-[20px] min-w-[20px] max-w-[20px] py-1 px-0 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-500">
@@ -3929,7 +3939,7 @@
                     JMLH
                 </th>
                 <th rowspan="2" class="sticky-header bg-slate-600 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-500 whitespace-nowrap">
-                    RP 15.000
+                    ${rateColumnHeader}
                 </th>
                 <th rowspan="2" class="sticky-header bg-slate-600 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-500">
                     TOTAL
@@ -4024,7 +4034,7 @@
                     ? getParticipantAllowanceDayCount(participant.checks)
                     : DAY_COLUMNS.reduce((c, col) => c + (participant.checks?.[col.slot1] ? 1 : 0) + (participant.checks?.[col.slot2] ? 1 : 0), 0);
 
-                const rowTotalAmount = rowCheckedCount * UNIT_RATE;
+                const rowTotalAmount = rowCheckedCount * activeRate;
                 grandTotalAmount += rowTotalAmount;
 
                 const ttdContent = participant.ttdDataUrl
@@ -4046,7 +4056,7 @@
                             ${rowCheckedCount}
                         </td>
                         <td class="w-[52px] min-w-[52px] py-0.5 px-1 text-right font-medium text-slate-700 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-200">
-                            ${formatRupiah(UNIT_RATE)}
+                            ${formatRupiah(activeRate)}
                         </td>
                         <td class="w-[58px] min-w-[58px] py-0.5 px-1 text-right font-bold text-emerald-800 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(rowTotalAmount)}
@@ -4119,10 +4129,10 @@
                         ${totalOrdersSum}
                     </td>
                     <td class="py-0.5 px-1 text-right font-bold text-amber-950 bg-amber-100 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-amber-200">
-                        ${formatRupiah(UNIT_RATE)}
+                        ${formatRupiah(activeRate)}
                     </td>
                     <td id="dailyOrdersTotalRpCell" class="py-0.5 px-1 text-right font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-amber-300">
-                        ${formatRupiah(totalOrdersSum * UNIT_RATE)}
+                        ${formatRupiah(totalOrdersSum * activeRate)}
                     </td>
                     <td class="py-0.5 px-0.5 bg-amber-100 border-r border-amber-200"></td>
                     <td class="py-0.5 px-0.5 bg-amber-100"></td>
@@ -4148,7 +4158,7 @@
                     ${isAllowanceTab ? participantsData.reduce((sum, p) => sum + getParticipantAllowanceDayCount(p.checks), 0) : grandTotalChecks}
                 </td>
                 <td class="py-0.5 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-300">
-                    ${formatRupiah(UNIT_RATE)}
+                    ${formatRupiah(activeRate)}
                 </td>
                 <td class="py-0.5 px-1 text-right font-extrabold text-emerald-950 bg-emerald-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(grandTotalAmount)}
