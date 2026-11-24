@@ -546,7 +546,7 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot id="tableFooter" class="bg-slate-100 border-t border-slate-400 font-bold text-[10px] sm:text-[11px] text-slate-800 sticky bottom-0 z-20"></tfoot>
+                    <tfoot id="tableFooter" class="bg-slate-100 border-t border-slate-400 font-bold text-[10px] sm:text-[11px] text-slate-800 relative z-10"></tfoot>
                 </table>
             </div>
         </main>
@@ -4213,8 +4213,8 @@
 
             let rekapHtml = `
                 <tr>
-                    <td class="sticky-col-no w-[20px] min-w-[20px] max-w-[20px] bg-slate-200 py-1 px-0 text-center text-[8px] border-r border-slate-300">-</td>
-                    <td class="sticky-col-name w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-slate-200 py-1 px-1 text-left font-bold text-slate-900 uppercase text-[8px] sm:text-[9px] truncate border-r border-slate-300">
+                    <td class="w-[20px] min-w-[20px] max-w-[20px] bg-slate-200 py-1 px-0 text-center text-[8px] border-r border-slate-300">-</td>
+                    <td class="w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-slate-200 py-1 px-1 text-left font-bold text-slate-900 uppercase text-[8px] sm:text-[9px] truncate border-r border-slate-300">
                         ${summaryRowLabel}
                     </td>
             `;
@@ -4223,8 +4223,8 @@
             if (!isAllowanceTab) {
                 ordersRowHtml = `
                     <tr class="bg-amber-50/90">
-                        <td class="sticky-col-no w-[20px] min-w-[20px] max-w-[20px] bg-amber-100 py-1 px-0 text-center text-[8px] border-r border-amber-200">-</td>
-                        <td class="sticky-col-name w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-amber-100 py-1 px-1 text-left font-extrabold text-amber-950 uppercase text-[8px] sm:text-[9px] truncate border-r border-amber-200">
+                        <td class="w-[20px] min-w-[20px] max-w-[20px] bg-amber-100 py-1 px-0 text-center text-[8px] border-r border-amber-200">-</td>
+                        <td class="w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-amber-100 py-1 px-1 text-left font-extrabold text-amber-950 uppercase text-[8px] sm:text-[9px] truncate border-r border-amber-200">
                             PESANAN HARIAN
                         </td>
                 `;
@@ -4363,4 +4363,4 @@
         } catch (_) {}
     </script>
 </body>
-    </html>
+                            </html>
