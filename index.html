@@ -1800,31 +1800,14 @@
             onSnapshot(getParticipantsColRef(), async (snapshot) => {
                 setConnectionStatus('ONLINE');
 
-                if (snapshot.empty && !hasSeededInitialData && !clearedAfterArchive) {
-                    hasSeededInitialData = true;
-                    try {
-                        const batch = writeBatch(db);
-                        const sampleNames = ['BUDI SANTOSO', 'SITI AMINAH', 'AHMAD FAUZI'];
-                        const baseTime = Date.now();
-                        sampleNames.forEach((sampleName, i) => {
-                            const ref = doc(getParticipantsColRef());
-                            const checks = getEmptyChecksObject();
-                            if (i === 0) { checks.d1_1 = true; checks.d1_2 = true; checks.d2_1 = true; }
-                            if (i === 1) { checks.d1_1 = true; }
-                            batch.set(ref, {
-                                name: sampleName,
-                                checks,
-                                ket: '',
-                                ttdDataUrl: '',
-                                createdAt: baseTime + i,
-                                createdBy: currentUser.uid
-                            });
-                        });
-                        await batch.commit();
-                        return;
-                    } catch (seedErr) {
-                        console.error("Gagal membuat data sampel awal:", seedErr);
+                if (snapshot.empty) {
+                    if (!isViewingArchiveMode) {
+                        participantsData = [];
+                        if (isAdminLoggedIn) {
+                            renderTable([]);
+                        }
                     }
+                    return;
                 }
 
                 const freshList = [];
@@ -4363,4 +4346,4 @@
         } catch (_) {}
     </script>
 </body>
-                            </html>
+    </html>
