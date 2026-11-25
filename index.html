@@ -530,6 +530,23 @@
                 </div>
             </div>
 
+            <!-- Banner Mode Arsip (Muncul Saat Admin Membuka Arsip) -->
+            <div id="archiveModeBanner" class="hidden mb-1.5 bg-amber-100 border border-amber-400 rounded-md px-2.5 py-1.5 flex items-center justify-between gap-2 no-print">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-xs shrink-0">📂</span>
+                    <span id="archiveModeBannerText" class="text-[10px] sm:text-[11px] font-extrabold text-amber-950 truncate">
+                        SEDANG MEMBUKA ARSIP
+                    </span>
+                </div>
+                <button 
+                    type="button" 
+                    id="btnExitArchiveMode"
+                    class="bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold text-[9px] sm:text-[10px] px-2.5 py-1 rounded transition cursor-pointer shrink-0"
+                >
+                    Kembali ke Data Aktif
+                </button>
+            </div>
+
             <div class="table-container bg-white border border-slate-300 rounded overflow-auto max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-130px)] flex-1 relative">
                 <table class="w-full border-collapse text-left select-none" id="checklistTable">
                     <thead id="tableHead">
@@ -1200,8 +1217,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
-            getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, 
-            onSnapshot, collection, writeBatch 
+            getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, deleteField,
+            onSnapshot, collection, writeBatch, getDocs 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const DEFAULT_FIREBASE_CONFIG = {
@@ -1265,6 +1282,7 @@
         let presenceInterval = null;
         let hasSeededInitialData = false;
         let clearedAfterArchive = false;
+        let isArchivingInProgress = false;
 
         let isAdminLoggedIn = false;
         let loggedInAdminName = 'ADMIN';
@@ -1493,6 +1511,29 @@
         const getAdminDocRef = (adminId) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_admins', adminId);
         const getArchivesColRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'checklist_archives');
         const getArchiveDocRef = (archiveId) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_archives', archiveId);
+
+        function makeDeterministicParticipantId(name) {
+            const normalized = String(name || '')
+                .trim()
+                .toUpperCase()
+                .replace(/[^A-Z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            return normalized ? `p_${normalized.slice(0, 120)}` : `p_${Date.now()}`;
+        }
+
+        async function commitChunkedOperations(items, applyFn, chunkSize = 400) {
+            if (!Array.isArray(items) || items.length === 0) return;
+            for (let i = 0; i < items.length; i += chunkSize) {
+                const slice = items.slice(i, i + chunkSize);
+                const batch = writeBatch(db);
+                slice.forEach((item, idx) => applyFn(batch, item, i + idx));
+                await batch.commit();
+            }
+        }
+
+        function getCurrentActorLabel() {
+            return isAdminLoggedIn ? (loggedInAdminName || 'ADMIN') : 'PESERTA';
+        }
 
         let toastTimeout = null;
         function showToast(message, isError = false) {
@@ -1741,9 +1782,33 @@
                 } catch (_) {}
             };
 
+            const cleanupStalePresence = async () => {
+                if (!currentUser || !isAdminLoggedIn) return;
+                try {
+                    const snap = await getDocs(getPresenceColRef());
+                    const staleCutoff = Date.now() - (10 * 60 * 1000);
+                    const staleIds = [];
+                    snap.forEach(d => {
+                        const data = d.data();
+                        if (d.id !== currentUser.uid && (!data || !data.lastSeen || data.lastSeen < staleCutoff)) {
+                            staleIds.push(d.id);
+                        }
+                    });
+                    if (staleIds.length > 0) {
+                        await commitChunkedOperations(staleIds, (batch, staleId) => {
+                            batch.delete(getPresenceDocRef(staleId));
+                        });
+                    }
+                } catch (_) {}
+            };
+
             pingPresence();
+            cleanupStalePresence();
             clearInterval(presenceInterval);
-            presenceInterval = setInterval(pingPresence, 25000);
+            presenceInterval = setInterval(() => {
+                pingPresence();
+                cleanupStalePresence();
+            }, 25000);
 
             onSnapshot(getPresenceColRef(), (snapshot) => {
                 const now = Date.now();
@@ -1836,7 +1901,9 @@
                         checks,
                         ket: data.ket || '',
                         ttdDataUrl: data.ttdDataUrl || '',
-                        createdAt: data.createdAt || 0
+                        createdAt: data.createdAt || 0,
+                        updatedAt: data.updatedAt || 0,
+                        updatedBy: data.updatedBy || ''
                     });
                 });
 
@@ -2154,15 +2221,29 @@
                     setConnectionStatus('SYNCING');
 
                     try {
+                        const dotUpdates = {
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
+                        };
+                        orderedDays.forEach(c => {
+                            dotUpdates[`statusMarks.${targetParticipant.id}.${c.key}`] = activeStatusCategory;
+                        });
+
                         await Promise.all([
                             updateDoc(getParticipantDocRef(targetParticipant.id), {
                                 ket: newKetText,
-                                updatedAt: Date.now()
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
                             }),
-                            setDoc(getMetaDocRef(), {
-                                statusMarks: statusMarksMap,
-                                updatedAt: Date.now()
-                            }, { merge: true })
+                            updateDoc(getMetaDocRef(), dotUpdates).catch(() =>
+                                setDoc(getMetaDocRef(), {
+                                    statusMarks: {
+                                        [targetParticipant.id]: existingMarks
+                                    },
+                                    updatedAt: Date.now(),
+                                    updatedBy: getCurrentActorLabel()
+                                }, { merge: true })
+                            )
                         ]);
                         setConnectionStatus('ONLINE');
                         showToast(`Status ${activeStatusCategory} (${dayNamesText}) disimpan untuk ${targetParticipant.name}`);
@@ -2322,20 +2403,25 @@
                 onConfirm: async () => {
                     setConnectionStatus('SYNCING');
                     try {
-                        const batch = writeBatch(db);
-                        targetParticipants.forEach(p => {
+                        await commitChunkedOperations(targetParticipants, (batch, p) => {
                             const updatedChecks = { ...(p.checks || getEmptyChecksObject()) };
+                            const fieldUpdates = {
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
+                            };
                             orderedDays.forEach(col => {
-                                if (includePagi) updatedChecks[col.slot1] = true;
-                                if (includeSore) updatedChecks[col.slot2] = true;
+                                if (includePagi) {
+                                    updatedChecks[col.slot1] = true;
+                                    fieldUpdates[`checks.${col.slot1}`] = true;
+                                }
+                                if (includeSore) {
+                                    updatedChecks[col.slot2] = true;
+                                    fieldUpdates[`checks.${col.slot2}`] = true;
+                                }
                             });
                             p.checks = updatedChecks;
-                            batch.update(getParticipantDocRef(p.id), {
-                                checks: updatedChecks,
-                                updatedAt: Date.now()
-                            });
+                            batch.update(getParticipantDocRef(p.id), fieldUpdates);
                         });
-                        await batch.commit();
                         renderTable([]);
                         setConnectionStatus('ONLINE');
                         showToast(`Ceklis ${dayNamesText} (${sessionsText}) diterapkan`);
@@ -2478,8 +2564,12 @@
             const saved2 = !!(portalSelectedParticipant.checks && portalSelectedParticipant.checks[todayCol.slot2]);
             const cb1 = document.getElementById('portalCheckboxSlot1');
             const cb2 = document.getElementById('portalCheckboxSlot2');
+            if (!cb1 || !cb2) return;
 
-            const updates = { updatedAt: Date.now() };
+            const updates = {
+                updatedAt: Date.now(),
+                updatedBy: `PESERTA:${portalSelectedParticipant.name}`
+            };
             const chosenLabels = [];
             let anyChanged = false;
 
@@ -2526,13 +2616,13 @@
                 return;
             }
 
-            const count = ALL_SLOT_KEYS.reduce((acc, k) => acc + (target.checks && target.checks[k] ? 1 : 0), 0);
-            const totalRp = count * UNIT_RATE;
+            const count = getParticipantAllowanceDayCount(target.checks);
+            const totalRp = count * ALLOWANCE_UNIT_RATE;
 
             const box = document.getElementById('portalAllowanceResult');
             document.getElementById('allowanceParticipantName').textContent = target.name;
             document.getElementById('allowanceDetailText').textContent =
-                `Jumlah centang: ${count} × ${formatRupiah(UNIT_RATE)} = ${formatRupiah(totalRp)}`;
+                `Jumlah hari aktif: ${count} × ${formatRupiah(ALLOWANCE_UNIT_RATE)} = ${formatRupiah(totalRp)}`;
             box.classList.remove('hidden');
         });
 
@@ -2637,7 +2727,8 @@
                     try {
                         await updateDoc(getParticipantDocRef(targetParticipant.id), {
                             ttdDataUrl: dataUrl,
-                            updatedAt: Date.now()
+                            updatedAt: Date.now(),
+                            updatedBy: `PESERTA:${targetParticipant.name}`
                         });
                         showToast("Tanda tangan berhasil disimpan");
                     } catch (err) {
@@ -2825,13 +2916,16 @@
                 onConfirm: async () => {
                     setConnectionStatus('SYNCING');
                     try {
-                        const batch = writeBatch(db);
-                        const fullChecks = {};
-                        ALL_SLOT_KEYS.forEach(k => { fullChecks[k] = true; });
-                        participantsData.forEach(p => {
-                            batch.update(getParticipantDocRef(p.id), { checks: fullChecks, updatedAt: Date.now() });
+                        await commitChunkedOperations(participantsData, (batch, p) => {
+                            const fieldUpdates = {
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
+                            };
+                            ALL_SLOT_KEYS.forEach(k => {
+                                fieldUpdates[`checks.${k}`] = true;
+                            });
+                            batch.update(getParticipantDocRef(p.id), fieldUpdates);
                         });
-                        await batch.commit();
                         setConnectionStatus('ONLINE');
                         showToast("Semua kotak berhasil diceklis");
                     } catch (_) {
@@ -2959,11 +3053,9 @@
                     setConnectionStatus('SYNCING');
                     try {
                         if (!isViewingArchiveMode && currentUser) {
-                            const batch = writeBatch(db);
-                            participantsData.forEach(p => {
+                            await commitChunkedOperations(participantsData, (batch, p) => {
                                 batch.delete(getParticipantDocRef(p.id));
                             });
-                            await batch.commit();
 
                             clearedAfterArchive = true;
                             hasSeededInitialData = true;
@@ -2971,7 +3063,8 @@
                                 statusMarks: {},
                                 dailyOrders: {},
                                 clearedAfterArchive: true,
-                                updatedAt: Date.now()
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
                             }, { merge: true });
                         }
 
@@ -3018,20 +3111,20 @@
 
             setConnectionStatus('SYNCING');
             try {
-                const batch = writeBatch(db);
                 const now = Date.now();
-                toAdd.forEach((name, i) => {
-                    const ref = doc(getParticipantsColRef());
+                await commitChunkedOperations(toAdd, (batch, name, i) => {
+                    const deterministicId = makeDeterministicParticipantId(name);
+                    const ref = getParticipantDocRef(deterministicId);
                     batch.set(ref, {
                         name,
                         checks: getEmptyChecksObject(),
                         ket: '',
                         ttdDataUrl: '',
                         createdAt: now + i,
-                        createdBy: currentUser.uid
-                    });
+                        createdBy: currentUser.uid,
+                        updatedBy: getCurrentActorLabel()
+                    }, { merge: true });
                 });
-                await batch.commit();
                 setConnectionStatus('ONLINE');
                 showToast(`${toAdd.length} peserta berhasil diimpor`);
             } catch (_) {
@@ -3138,6 +3231,22 @@
         function updateSaveArchiveButtonLabel() {
             const labelEl = document.getElementById('btnSaveArchiveLabel');
             const btnSaveArchive = document.getElementById('btnSaveArchiveData');
+            const bannerEl = document.getElementById('archiveModeBanner');
+            const bannerTextEl = document.getElementById('archiveModeBannerText');
+
+            if (bannerEl && bannerTextEl) {
+                if (isViewingArchiveMode) {
+                    const activeArc = archivesList.find(a => a.id === activeArchiveId);
+                    const rangeLabel = activeArc ? formatArchiveRangeDisplay(activeArc) : 'Arsip';
+                    bannerTextEl.textContent = isArchiveReadOnly
+                        ? `MODE ARSIP (LIHAT SAJA): ${rangeLabel}`
+                        : `MODE ARSIP (EDIT): ${rangeLabel}`;
+                    bannerEl.classList.remove('hidden');
+                } else {
+                    bannerEl.classList.add('hidden');
+                }
+            }
+
             if (!labelEl || !btnSaveArchive) return;
 
             if (isViewingArchiveMode && !isArchiveReadOnly) {
@@ -3150,6 +3259,61 @@
                 btnSaveArchive.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
             }
         }
+
+        async function exitArchiveModeToLive() {
+            if (!isViewingArchiveMode) return;
+            isViewingArchiveMode = false;
+            activeArchiveId = null;
+            isArchiveReadOnly = false;
+            updateSaveArchiveButtonLabel();
+
+            if (!currentUser) return;
+            setConnectionStatus('SYNCING');
+            try {
+                const [metaSnap, partSnap] = await Promise.all([
+                    getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'checklist_meta')),
+                    getDocs(getParticipantsColRef())
+                ]);
+
+                metaSnap.forEach(d => {
+                    if (d.id === 'config') {
+                        const data = d.data();
+                        dailyOrdersData = (data.dailyOrders && typeof data.dailyOrders === 'object') ? data.dailyOrders : {};
+                        statusMarksMap = (data.statusMarks && typeof data.statusMarks === 'object') ? data.statusMarks : {};
+                        periodRange = (data.periodRange && typeof data.periodRange === 'object')
+                            ? { start: data.periodRange.start || '', end: data.periodRange.end || '' }
+                            : { start: '', end: '' };
+                    }
+                });
+
+                const liveList = [];
+                partSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    liveList.push({
+                        id: docSnap.id,
+                        name: (data.name || '').toUpperCase(),
+                        checks: data.checks || {},
+                        ket: data.ket || '',
+                        ttdDataUrl: data.ttdDataUrl || '',
+                        createdAt: data.createdAt || 0,
+                        updatedAt: data.updatedAt || 0,
+                        updatedBy: data.updatedBy || ''
+                    });
+                });
+                liveList.sort((a, b) => (a.createdAt !== b.createdAt ? a.createdAt - b.createdAt : a.name.localeCompare(b.name)));
+                participantsData = liveList;
+
+                syncPeriodInputsUI();
+                renderTable([]);
+                setConnectionStatus('ONLINE');
+                showToast("Kembali ke data aktif saat ini");
+            } catch (_) {
+                setConnectionStatus('OFFLINE');
+                showToast("Gagal memuat ulang data aktif", true);
+            }
+        }
+
+        document.getElementById('btnExitArchiveMode')?.addEventListener('click', exitArchiveModeToLive);
 
         async function saveEditedArchiveChanges() {
             if (!activeArchiveId) return;
@@ -3213,6 +3377,10 @@
             btnSaveArchive.dataset.bound = 'true';
 
             btnSaveArchive.addEventListener('click', async () => {
+                if (isArchivingInProgress) {
+                    showToast("Proses pengarsipan sedang berjalan, harap tunggu...", true);
+                    return;
+                }
                 if (isViewingArchiveMode && !isArchiveReadOnly) {
                     await saveEditedArchiveChanges();
                     return;
@@ -3247,6 +3415,10 @@
                     confirmText: 'Ya, Simpan & Kosongkan',
                     confirmClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
                     onConfirm: async () => {
+                        if (isArchivingInProgress) return;
+                        isArchivingInProgress = true;
+                        btnSaveArchive.disabled = true;
+                        btnSaveArchive.classList.add('opacity-60', 'cursor-not-allowed');
                         setConnectionStatus('SYNCING');
                         try {
                             const createdArchiveRef = await addDoc(getArchivesColRef(), {
@@ -3277,11 +3449,9 @@
                                 statusMarksSnapshot: JSON.parse(JSON.stringify(statusMarksMap || {}))
                             }, ...archivesList]);
 
-                            const batch = writeBatch(db);
-                            participantsData.forEach(p => {
+                            await commitChunkedOperations(participantsData, (batch, p) => {
                                 batch.delete(getParticipantDocRef(p.id));
                             });
-                            await batch.commit();
 
                             clearedAfterArchive = true;
                             hasSeededInitialData = true;
@@ -3299,7 +3469,8 @@
                                 dailyOrders: {},
                                 periodRange: { start: '', end: '' },
                                 clearedAfterArchive: true,
-                                updatedAt: Date.now()
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
                             }, { merge: true });
 
                             setConnectionStatus('ONLINE');
@@ -3307,6 +3478,10 @@
                         } catch (_) {
                             setConnectionStatus('OFFLINE');
                             showToast("Gagal menyimpan & mengosongkan data", true);
+                        } finally {
+                            isArchivingInProgress = false;
+                            btnSaveArchive.disabled = false;
+                            btnSaveArchive.classList.remove('opacity-60', 'cursor-not-allowed');
                         }
                     }
                 });
@@ -3421,30 +3596,37 @@
                 confirmText: 'Ya, Pulihkan ke Aktif',
                 confirmClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
                 onConfirm: async () => {
+                    if (!navigator.onLine) {
+                        showToast("Koneksi internet terputus. Pastikan online sebelum memulihkan arsip.", true);
+                        return;
+                    }
                     setConnectionStatus('SYNCING');
                     try {
-                        const batch = writeBatch(db);
-                        participantsData.forEach(p => {
+                        await commitChunkedOperations(participantsData, (batch, p) => {
                             batch.delete(getParticipantDocRef(p.id));
                         });
+
                         const baseTime = Date.now();
-                        (arc.rows || []).forEach((r, idx) => {
+                        const archiveRows = arc.rows || [];
+                        await commitChunkedOperations(archiveRows, (batch, r, idx) => {
                             const checksObj = getEmptyChecksObject();
                             const countVal = Math.max(0, Math.min(ALL_SLOT_KEYS.length, parseInt(r.count, 10) || 0));
                             for (let s = 0; s < countVal; s++) {
                                 checksObj[ALL_SLOT_KEYS[s]] = true;
                             }
-                            const ref = doc(getParticipantsColRef());
+                            const resolvedName = (r.name || `PESERTA ${idx + 1}`).toUpperCase();
+                            const deterministicId = makeDeterministicParticipantId(resolvedName);
+                            const ref = getParticipantDocRef(deterministicId);
                             batch.set(ref, {
-                                name: (r.name || `PESERTA ${idx + 1}`).toUpperCase(),
+                                name: resolvedName,
                                 checks: checksObj,
                                 ket: r.ket || '',
                                 ttdDataUrl: r.ttdDataUrl || '',
                                 createdAt: baseTime + idx,
-                                createdBy: currentUser.uid
-                            });
+                                createdBy: currentUser.uid,
+                                updatedBy: getCurrentActorLabel()
+                            }, { merge: true });
                         });
-                        await batch.commit();
 
                         isViewingArchiveMode = false;
                         activeArchiveId = null;
@@ -3463,26 +3645,24 @@
                             statusMarks: statusMarksMap,
                             periodRange,
                             clearedAfterArchive: false,
-                            updatedAt: Date.now()
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
                         }, { merge: true });
 
-                        // Hapus arsip yang baru dipulihkan agar tidak lagi muncul di menu arsip
+                        await deleteDoc(getArchiveDocRef(archiveId));
+
                         archivesList = archivesList.filter(item => item.id !== archiveId);
                         saveArchivesLocalBackup(archivesList);
                         const menuLabel = document.getElementById('archiveMenuLabel');
                         if (menuLabel) menuLabel.textContent = `Arsip Rekapan (${archivesList.length})`;
                         renderArchiveList();
 
-                        try {
-                            await deleteDoc(getArchiveDocRef(archiveId));
-                        } catch (_) {}
-
                         closeArchiveModal();
                         setConnectionStatus('ONLINE');
                         showToast(`Arsip "${formatArchiveRangeDisplay(arc)}" dipulihkan ke aktif & dihapus dari arsip`);
                     } catch (_) {
                         setConnectionStatus('OFFLINE');
-                        showToast("Gagal memulihkan arsip ke aktif", true);
+                        showToast("Gagal memulihkan arsip ke aktif (periksa koneksi internet)", true);
                     }
                 }
             });
@@ -3548,18 +3728,26 @@
                 confirmText: 'Ya, Hapus Arsip',
                 confirmClass: 'bg-rose-600 hover:bg-rose-700 text-white',
                 onConfirm: async () => {
-                    archivesList = archivesList.filter(item => item.id !== archiveId);
-                    saveArchivesLocalBackup(archivesList);
-                    const menuLabel = document.getElementById('archiveMenuLabel');
-                    if (menuLabel) menuLabel.textContent = `Arsip Rekapan (${archivesList.length})`;
-                    renderArchiveList();
-
-                    if (currentUser) {
-                        try {
-                            await deleteDoc(getArchiveDocRef(archiveId));
-                        } catch (_) {}
+                    if (!navigator.onLine) {
+                        showToast("Koneksi internet terputus. Tidak dapat menghapus arsip saat offline.", true);
+                        return;
                     }
-                    showToast("Arsip berhasil dihapus");
+                    setConnectionStatus('SYNCING');
+                    try {
+                        if (currentUser) {
+                            await deleteDoc(getArchiveDocRef(archiveId));
+                        }
+                        archivesList = archivesList.filter(item => item.id !== archiveId);
+                        saveArchivesLocalBackup(archivesList);
+                        const menuLabel = document.getElementById('archiveMenuLabel');
+                        if (menuLabel) menuLabel.textContent = `Arsip Rekapan (${archivesList.length})`;
+                        renderArchiveList();
+                        setConnectionStatus(currentUser ? 'ONLINE' : 'OFFLINE');
+                        showToast("Arsip berhasil dihapus");
+                    } catch (_) {
+                        setConnectionStatus('OFFLINE');
+                        showToast("Gagal menghapus arsip dari server (periksa koneksi internet)", true);
+                    }
                 }
             });
         };
@@ -3675,7 +3863,8 @@
                     try {
                         await updateDoc(getParticipantDocRef(participantId), {
                             [`checks.${slotKey}`]: newValue,
-                            updatedAt: Date.now()
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
                         });
                         setConnectionStatus('ONLINE');
                     } catch (_) {
@@ -3699,25 +3888,16 @@
             try {
                 await updateDoc(getParticipantDocRef(participantId), {
                     ket: val,
-                    updatedAt: Date.now()
+                    updatedAt: Date.now(),
+                    updatedBy: getCurrentActorLabel()
                 });
             } catch (_) {}
         };
 
-        window.handleDailyOrderChange = async function(dayKey, inputEl) {
+        window.handleDailyOrderChange = function(dayKey, inputEl) {
             if (isViewingArchiveMode && isArchiveReadOnly) return;
-            const val = inputEl.value;
-            dailyOrdersData[dayKey] = val;
+            dailyOrdersData[dayKey] = inputEl.value;
             recomputeDailyOrdersFooter();
-
-            if (currentUser && !isViewingArchiveMode) {
-                try {
-                    await setDoc(getMetaDocRef(), {
-                        dailyOrders: dailyOrdersData,
-                        updatedAt: Date.now()
-                    }, { merge: true });
-                } catch (_) {}
-            }
         };
 
         window.handleDailyOrderFocus = function(dayKey) {
@@ -3755,10 +3935,17 @@
 
             if (currentUser && !isViewingArchiveMode) {
                 try {
-                    await setDoc(getMetaDocRef(), {
-                        dailyOrders: dailyOrdersData,
-                        updatedAt: Date.now()
-                    }, { merge: true });
+                    await updateDoc(getMetaDocRef(), {
+                        [`dailyOrders.${dayKey}`]: trimmed,
+                        updatedAt: Date.now(),
+                        updatedBy: getCurrentActorLabel()
+                    }).catch(() =>
+                        setDoc(getMetaDocRef(), {
+                            dailyOrders: { [dayKey]: trimmed },
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
+                        }, { merge: true })
+                    );
                 } catch (_) {}
             }
         };
@@ -3837,21 +4024,25 @@
             clearedAfterArchive = false;
             setConnectionStatus('SYNCING');
             try {
-                const batch = writeBatch(db);
                 const baseTime = Date.now();
-                uniqueNewNames.forEach((name, idx) => {
-                    const ref = doc(getParticipantsColRef());
+                await commitChunkedOperations(uniqueNewNames, (batch, name, idx) => {
+                    const deterministicId = makeDeterministicParticipantId(name);
+                    const ref = getParticipantDocRef(deterministicId);
                     batch.set(ref, {
                         name,
                         checks: getEmptyChecksObject(),
                         ket: '',
                         ttdDataUrl: '',
                         createdAt: baseTime + idx,
-                        createdBy: currentUser.uid
-                    });
+                        createdBy: currentUser.uid,
+                        updatedBy: getCurrentActorLabel()
+                    }, { merge: true });
                 });
-                await batch.commit();
-                await setDoc(getMetaDocRef(), { clearedAfterArchive: false }, { merge: true });
+                await setDoc(getMetaDocRef(), {
+                    clearedAfterArchive: false,
+                    updatedAt: Date.now(),
+                    updatedBy: getCurrentActorLabel()
+                }, { merge: true });
                 setConnectionStatus('ONLINE');
                 showToast(`${uniqueNewNames.length} peserta berhasil ditambahkan`);
             } catch (_) {
@@ -3881,10 +4072,18 @@
             closeDeleteModal();
             setConnectionStatus('SYNCING');
             try {
-                await deleteDoc(getParticipantDocRef(targetId));
+                await Promise.all([
+                    deleteDoc(getParticipantDocRef(targetId)),
+                    updateDoc(getMetaDocRef(), {
+                        [`statusMarks.${targetId}`]: deleteField(),
+                        updatedAt: Date.now(),
+                        updatedBy: getCurrentActorLabel()
+                    }).catch(() => {})
+                ]);
                 delete previousChecksSnapshot[targetId];
+                delete statusMarksMap[targetId];
                 setConnectionStatus('ONLINE');
-                showToast("Peserta berhasil dihapus");
+                showToast("Peserta & penanda statusnya berhasil dihapus");
             } catch (_) {
                 setConnectionStatus('OFFLINE');
                 showToast("Gagal menghapus peserta", true);
@@ -3913,15 +4112,14 @@
             closeResetModal();
             setConnectionStatus('SYNCING');
             try {
-                const batch = writeBatch(db);
-                participantsData.forEach(p => {
+                await commitChunkedOperations(participantsData, (batch, p) => {
                     batch.update(getParticipantDocRef(p.id), {
                         checks: getEmptyChecksObject(),
                         ttdDataUrl: '',
-                        updatedAt: Date.now()
+                        updatedAt: Date.now(),
+                        updatedBy: getCurrentActorLabel()
                     });
                 });
-                await batch.commit();
                 setConnectionStatus('ONLINE');
                 showToast("Semua centang berhasil dikosongkan");
             } catch (_) {
@@ -3963,7 +4161,8 @@
             try {
                 await updateDoc(getParticipantDocRef(targetId), {
                     name: newName,
-                    updatedAt: Date.now()
+                    updatedAt: Date.now(),
+                    updatedBy: getCurrentActorLabel()
                 });
                 setConnectionStatus('ONLINE');
                 showToast("Nama peserta berhasil diubah");
@@ -4158,10 +4357,22 @@
                         <td class="sticky-col-no w-[20px] min-w-[20px] max-w-[20px] py-0.5 px-0 text-center font-bold text-slate-500 text-[8.5px] sm:text-[9px] border-r border-slate-200">
                             ${idx + 1}
                         </td>
-                        <td class="sticky-col-name w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] py-0.5 px-1 font-bold text-slate-900 text-[8.5px] sm:text-[9.5px] uppercase truncate border-r border-slate-300" title="${escapeHtml(participant.name)}">
-                            <span ondblclick="promptEditParticipant('${participant.id}', '${escapeHtml(participant.name).replace(/'/g, "\\'")}')" title="Klik 2x untuk ubah nama">
-                                ${escapeHtml(participant.name)}
-                            </span>
+                        <td class="sticky-col-name w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] py-0.5 px-1 font-bold text-slate-900 text-[8.5px] sm:text-[9.5px] uppercase border-r border-slate-300" title="${escapeHtml(participant.name)}${participant.updatedBy ? ` • Diubah oleh ${escapeHtml(participant.updatedBy)}` : ''}">
+                            <div class="flex items-center justify-between gap-1">
+                                <span ondblclick="promptEditParticipant('${participant.id}', '${escapeHtml(participant.name).replace(/'/g, "\\'")}')" title="Klik 2x untuk ubah nama" class="truncate cursor-pointer">
+                                    ${escapeHtml(participant.name)}
+                                </span>
+                                ${(!isViewingArchiveMode || !isArchiveReadOnly) ? `
+                                    <button 
+                                        type="button" 
+                                        onclick="promptDeleteParticipant('${participant.id}', '${escapeHtml(participant.name).replace(/'/g, "\\'")}')" 
+                                        title="Hapus peserta ini"
+                                        class="text-slate-400 hover:text-rose-600 font-extrabold text-[9px] px-0.5 rounded transition cursor-pointer shrink-0 no-print"
+                                    >
+                                        ✕
+                                    </button>
+                                ` : ''}
+                            </div>
                         </td>
                         ${cellsHtml}
                         <td class="w-[30px] min-w-[30px] py-0.5 px-0.5 text-center font-bold text-blue-900 text-[8.5px] sm:text-[9px] border-r border-slate-200">
@@ -4182,6 +4393,7 @@
                                 inputmode="text"
                                 value="${escapeHtml(participant.ket)}"
                                 placeholder="..."
+                                title="${participant.updatedBy ? `Terakhir diubah oleh ${escapeHtml(participant.updatedBy)}${participant.updatedAt ? ' (' + new Date(participant.updatedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ')' : ''}` : 'Keterangan'}"
                                 onblur="handleSaveKet('${participant.id}', this)"
                                 class="w-full min-w-[58px] bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-blue-500 rounded px-0.5 py-0 text-[8.5px] text-slate-800 focus:outline-none"
                             >
@@ -4346,4 +4558,4 @@
         } catch (_) {}
     </script>
 </body>
-    </html>
+                    </html>
