@@ -820,6 +820,14 @@
                     <span>🗑️</span>
                     <span>Hapus Semua Baris Kolom</span>
                 </button>
+
+                <button type="button" id="btnInstallAppFromDrawer" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span>📲</span>
+                        <span>Install Aplikasi</span>
+                    </span>
+                    <span id="installAppStatusBadge" class="text-[9px] bg-cyan-800/80 px-1.5 py-0.5 rounded uppercase">PWA</span>
+                </button>
             </div>
 
             <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
@@ -4688,6 +4696,79 @@
         syncPeriodInputsUI();
         updateRoleView();
         initAuthAndRealtime();
+
+        let deferredInstallPrompt = null;
+        const btnInstallAppFromDrawer = document.getElementById('btnInstallAppFromDrawer');
+        const installAppStatusBadge = document.getElementById('installAppStatusBadge');
+
+        function isAppAlreadyInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function updateInstallButtonUI() {
+            if (!btnInstallAppFromDrawer || !installAppStatusBadge) return;
+            if (isAppAlreadyInstalled()) {
+                installAppStatusBadge.textContent = 'Terinstal';
+                btnInstallAppFromDrawer.classList.remove('bg-cyan-600', 'hover:bg-cyan-700');
+                btnInstallAppFromDrawer.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+            } else if (deferredInstallPrompt) {
+                installAppStatusBadge.textContent = 'Siap';
+            } else {
+                installAppStatusBadge.textContent = 'PWA';
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            updateInstallButtonUI();
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            updateInstallButtonUI();
+            showToast("Aplikasi berhasil diinstal ke perangkat");
+        });
+
+        if (btnInstallAppFromDrawer) {
+            btnInstallAppFromDrawer.addEventListener('click', async () => {
+                closeNavDrawer();
+
+                if (isAppAlreadyInstalled()) {
+                    showToast("Aplikasi sudah terinstal di perangkat ini");
+                    return;
+                }
+
+                if (deferredInstallPrompt) {
+                    try {
+                        deferredInstallPrompt.prompt();
+                        const choiceResult = await deferredInstallPrompt.userChoice;
+                        if (choiceResult && choiceResult.outcome === 'accepted') {
+                            showToast("Memulai proses instalasi aplikasi...");
+                        }
+                        deferredInstallPrompt = null;
+                        updateInstallButtonUI();
+                    } catch (_) {
+                        showToast("Gagal membuka dialog instalasi", true);
+                    }
+                    return;
+                }
+
+                const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+                openConfirmPopup({
+                    title: 'Install Aplikasi ke Layar Utama',
+                    message: isIos
+                        ? 'Ketuk tombol Bagikan (Share) di browser Safari Anda, lalu pilih "Tambahkan ke Layar Utama" (Add to Home Screen).'
+                        : 'Buka menu titik tiga (⋮) di pojok kanan atas browser Anda, lalu pilih "Install aplikasi" atau "Tambahkan ke layar utama".',
+                    detail: 'Aplikasi akan berjalan dalam mode layar penuh seperti aplikasi asli.',
+                    confirmText: 'Mengerti',
+                    confirmClass: 'bg-cyan-600 hover:bg-cyan-700 text-white',
+                    onConfirm: () => {}
+                });
+            });
+        }
+
+        updateInstallButtonUI();
 
         try {
             const manifestObj = {
