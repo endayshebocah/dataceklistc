@@ -320,7 +320,7 @@
             #checklistTable {
                 width: 100% !important;
                 min-width: 100% !important;
-                table-layout: auto !important;
+                table-layout: fixed !important;
                 border-collapse: collapse !important;
                 border: 1.5px solid #0f172a !important;
                 font-size: 9px !important;
@@ -410,15 +410,55 @@
             #checklistTable tbody tr td {
                 height: 22px !important;
             }
+            #checklistTable th:nth-child(1),
+            #checklistTable td:nth-child(1) {
+                width: 24px !important;
+                min-width: 24px !important;
+                max-width: 24px !important;
+            }
             #checklistTable th:nth-child(2),
             #checklistTable td:nth-child(2) {
-                width: 18% !important;
+                width: 19% !important;
+                min-width: 0 !important;
                 max-width: none !important;
+            }
+            #checklistTable th.print-day-group {
+                width: 6.4% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+            }
+            #checklistTable th.print-slot-col,
+            #checklistTable td.print-slot-col {
+                width: 3.2% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                padding-left: 1px !important;
+                padding-right: 1px !important;
+            }
+            #checklistTable th.print-jmlh-col,
+            #checklistTable td.print-jmlh-col {
+                width: 3.8% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable th.print-rate-col,
+            #checklistTable td.print-rate-col {
+                width: 7.2% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable th.print-total-col,
+            #checklistTable td.print-total-col {
+                width: 7.8% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable th.print-ttd-col,
+            #checklistTable td.print-ttd-col {
+                width: 5.5% !important;
+                min-width: 0 !important;
             }
             #checklistTable th:last-child,
             #checklistTable td:last-child {
-                width: 12% !important;
-                min-width: 90px !important;
+                width: 11.9% !important;
+                min-width: 0 !important;
             }
         }
     </style>
@@ -4295,7 +4335,7 @@
                     const subBg = 'bg-slate-50 text-slate-500';
 
                     headerHtml += `
-                        <th colspan="2" class="sticky-header py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
+                        <th colspan="2" class="print-day-group sticky-header py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
                             <div class="flex flex-col items-center justify-center leading-tight">
                                 <span class="print-day-name text-[8px] sm:text-[9px] font-extrabold tracking-wide uppercase">${col.full}</span>
                                 <span class="print-date-text text-[7.5px] sm:text-[8px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-900' : 'text-slate-700'}">
@@ -4306,10 +4346,10 @@
                     `;
 
                     subHeaderHtml += `
-                        <th class="sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-200 ${subBg}" title="${col.full} - Pagi">
+                        <th class="print-slot-col sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-200 ${subBg}" title="${col.full} - Pagi">
                             Pagi
                         </th>
-                        <th class="sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-300 ${subBg}" title="${col.full} - Sore">
+                        <th class="print-slot-col sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-300 ${subBg}" title="${col.full} - Sore">
                             Sore
                         </th>
                     `;
@@ -4330,16 +4370,16 @@
                 : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Cuti)" class="sticky-header bg-slate-100 text-slate-700 w-[64px] min-w-[64px] py-0.5 px-1 text-[8px] sm:text-[9px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
 
             headerHtml += `
-                <th rowspan="2" class="sticky-header bg-slate-100 text-slate-700 w-[30px] min-w-[30px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="print-jmlh-col sticky-header bg-slate-100 text-slate-700 w-[30px] min-w-[30px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
                     JMLH
                 </th>
-                <th rowspan="2" class="sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300 whitespace-nowrap">
+                <th rowspan="2" class="print-rate-col sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300 whitespace-nowrap">
                     ${rateColumnHeader}
                 </th>
-                <th rowspan="2" class="sticky-header bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300">
+                <th rowspan="2" class="print-total-col sticky-header bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300">
                     TOTAL
                 </th>
-                <th rowspan="2" class="sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="print-ttd-col sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
                     TTD
                 </th>
                 <th rowspan="2" ${ketHeaderAttrs}>
@@ -4401,7 +4441,7 @@
                         const markTitleAttr = dayMarkCategory ? `title="Status ${dayMarkCategory} (${col.full})"` : '';
 
                         cellsHtml += `
-                            <td ${markTitleAttr} class="w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-200 ${cellBgClass} ${markStyleClass} ${isUpdated1 ? 'cell-updated' : ''}">
+                            <td ${markTitleAttr} class="print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-200 ${cellBgClass} ${markStyleClass} ${isUpdated1 ? 'cell-updated' : ''}">
                                 <label class="flex items-center justify-center w-full h-full py-0.5 px-0 m-0 cursor-pointer">
                                     <input 
                                         type="checkbox" 
@@ -4411,7 +4451,7 @@
                                     >
                                 </label>
                             </td>
-                            <td ${markTitleAttr} class="w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-300 ${cellBgClass} ${markStyleClass} ${isUpdated2 ? 'cell-updated' : ''}">
+                            <td ${markTitleAttr} class="print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-300 ${cellBgClass} ${markStyleClass} ${isUpdated2 ? 'cell-updated' : ''}">
                                 <label class="flex items-center justify-center w-full h-full py-0.5 px-0 m-0 cursor-pointer">
                                     <input 
                                         type="checkbox" 
@@ -4459,16 +4499,16 @@
                             </div>
                         </td>
                         ${cellsHtml}
-                        <td class="w-[30px] min-w-[30px] py-0.5 px-0.5 text-center font-bold text-blue-900 text-[8.5px] sm:text-[9px] border-r border-slate-200">
+                        <td class="print-jmlh-col w-[30px] min-w-[30px] py-0.5 px-0.5 text-center font-bold text-blue-900 text-[8.5px] sm:text-[9px] border-r border-slate-200">
                             ${rowCheckedCount}
                         </td>
-                        <td class="w-[52px] min-w-[52px] py-0.5 px-1 text-right font-medium text-slate-700 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-200">
+                        <td class="print-rate-col w-[52px] min-w-[52px] py-0.5 px-1 text-right font-medium text-slate-700 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(activeRate)}
                         </td>
-                        <td class="w-[58px] min-w-[58px] py-0.5 px-1 text-right font-bold text-emerald-800 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-200">
+                        <td class="print-total-col w-[58px] min-w-[58px] py-0.5 px-1 text-right font-bold text-emerald-800 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(rowTotalAmount)}
                         </td>
-                        <td class="w-[52px] min-w-[52px] py-0.5 px-0.5 text-center border-r border-slate-200">
+                        <td class="print-ttd-col w-[52px] min-w-[52px] py-0.5 px-0.5 text-center border-r border-slate-200">
                             ${ttdContent}
                         </td>
                         <td class="w-[64px] min-w-[64px] py-0.5 px-0.5">
@@ -4551,10 +4591,10 @@
             if (!isAllowanceTab) {
                 DAY_COLUMNS.forEach(col => {
                     rekapHtml += `
-                        <td class="py-0.5 px-0 text-center font-bold text-emerald-800 text-[8px] sm:text-[9px] border-r border-slate-300">
+                        <td class="print-slot-col py-0.5 px-0 text-center font-bold text-emerald-800 text-[8px] sm:text-[9px] border-r border-slate-300">
                             ${slotTotals[col.slot1]}
                         </td>
-                        <td class="py-0.5 px-0 text-center font-bold text-sky-800 text-[8px] sm:text-[9px] border-r border-slate-300">
+                        <td class="print-slot-col py-0.5 px-0 text-center font-bold text-sky-800 text-[8px] sm:text-[9px] border-r border-slate-300">
                             ${slotTotals[col.slot2]}
                         </td>
                     `;
@@ -4562,16 +4602,16 @@
             }
 
             rekapHtml += `
-                <td class="py-0.5 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[8.5px] sm:text-[9px] border-r border-slate-300">
+                <td class="print-jmlh-col py-0.5 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[8.5px] sm:text-[9px] border-r border-slate-300">
                     ${isAllowanceTab ? participantsData.reduce((sum, p) => sum + getParticipantAllowanceDayCount(p.checks), 0) : grandTotalChecks}
                 </td>
-                <td class="py-0.5 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-300">
+                <td class="print-rate-col py-0.5 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(activeRate)}
                 </td>
-                <td class="py-0.5 px-1 text-right font-extrabold text-emerald-950 bg-emerald-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-300">
+                <td class="print-total-col py-0.5 px-1 text-right font-extrabold text-emerald-950 bg-emerald-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(grandTotalAmount)}
                 </td>
-                <td class="py-0.5 px-0.5 bg-slate-200 border-r border-slate-300"></td>
+                <td class="print-ttd-col py-0.5 px-0.5 bg-slate-200 border-r border-slate-300"></td>
                 <td class="py-0.5 px-0.5 bg-slate-200"></td>
             </tr>
             `;
