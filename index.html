@@ -286,7 +286,21 @@
                 display: block !important;
                 margin-bottom: 8px !important;
                 border-bottom: 2px solid #0f172a !important;
-                padding-bottom: 4px !important;
+                padding-bottom: 5px !important;
+            }
+            #printDocTitle {
+                font-size: 14px !important;
+                color: #000000 !important;
+            }
+            #printDocPeriod {
+                font-size: 12px !important;
+                font-weight: 800 !important;
+                color: #000000 !important;
+            }
+            #printDocDate {
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
             }
             .table-container {
                 overflow: visible !important;
@@ -300,24 +314,57 @@
             #checklistTable {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                border: 1px solid #334155 !important;
-                font-size: 9px !important;
+                border: 1.5px solid #0f172a !important;
+                font-size: 9.5px !important;
+            }
+            #checklistTable thead {
+                display: table-header-group !important;
+            }
+            #checklistTable tfoot {
+                display: table-row-group !important;
+            }
+            #checklistTable tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
             }
             #checklistTable th,
             #checklistTable td {
-                border: 1px solid #475569 !important;
+                border: 1px solid #1e293b !important;
                 padding: 3px 4px !important;
                 position: static !important;
                 box-shadow: none !important;
             }
+            #checklistTable tbody tr:last-child td {
+                border-bottom: 1.5px solid #0f172a !important;
+            }
             #checklistTable thead th {
-                background-color: #334155 !important;
-                color: #ffffff !important;
+                background-color: #e2e8f0 !important;
+                color: #000000 !important;
+                font-weight: 800 !important;
+            }
+            #checklistTable thead .print-day-name {
+                font-size: 9.5px !important;
+                font-weight: 900 !important;
+                color: #000000 !important;
+            }
+            #checklistTable thead .print-date-text {
+                font-size: 9px !important;
+                font-weight: 800 !important;
+                color: #000000 !important;
+                letter-spacing: 0.01em !important;
+            }
+            #checklistTable thead tr#tableSubHeaderRow th {
+                background-color: #f1f5f9 !important;
+                color: #000000 !important;
+                font-size: 8.5px !important;
+                font-weight: 800 !important;
             }
             #checklistTable tfoot td {
                 background-color: #f1f5f9 !important;
-                color: #0f172a !important;
+                color: #000000 !important;
+                border: 1px solid #0f172a !important;
                 border-top: 1.5px solid #0f172a !important;
+                border-bottom: 1.5px solid #0f172a !important;
             }
             #checklistTable input[type="text"] {
                 border: none !important;
@@ -330,7 +377,7 @@
             .custom-checkbox {
                 width: 12px !important;
                 height: 12px !important;
-                border: 1px solid #334155 !important;
+                border: 1.2px solid #0f172a !important;
             }
             .sticky-col-no, .sticky-col-name, .sticky-header, .sticky-subheader, .sticky-corner-no, .sticky-corner-name {
                 position: static !important;
@@ -511,7 +558,7 @@
                 </div>
             </div>
 
-            <div class="mb-1 px-0.5 flex flex-col">
+            <div class="mb-1 px-0.5 flex flex-col no-print">
                 <h1 id="tableSectionTitle" class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
                     Rekapan Pembayaran Catering
                 </h1>
@@ -4213,8 +4260,8 @@
                     headerHtml += `
                         <th colspan="2" class="sticky-header py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
                             <div class="flex flex-col items-center justify-center leading-tight">
-                                <span class="text-[8px] sm:text-[9px] font-extrabold tracking-wide uppercase">${col.full}</span>
-                                <span class="text-[7px] sm:text-[7.5px] font-medium mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-700 font-semibold' : 'text-slate-500'}">
+                                <span class="print-day-name text-[8px] sm:text-[9px] font-extrabold tracking-wide uppercase">${col.full}</span>
+                                <span class="print-date-text text-[7.5px] sm:text-[8px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-900' : 'text-slate-700'}">
                                     ${dateInfo.fullDateLabel}
                                 </span>
                             </div>
@@ -4237,7 +4284,7 @@
                 : `
                     <span class="inline-flex items-center gap-0.5 underline decoration-slate-600 underline-offset-2">
                         <span>KET</span>
-                        <span class="text-[6.5px] px-0.5 rounded bg-slate-200 text-slate-800 font-extrabold">MENU</span>
+                        <span class="text-[6.5px] px-0.5 rounded bg-slate-200 text-slate-800 font-extrabold no-print">MENU</span>
                     </span>
                 `;
 
@@ -4558,4 +4605,4 @@
         } catch (_) {}
     </script>
 </body>
-                    </html>
+    </html>
