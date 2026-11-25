@@ -94,7 +94,7 @@
             animation: cellFlash 1.2s ease-out;
         }
 
-        /* Checkbox di Tabel Admin (gaya kotak rounded tegas & centang gelap seperti contoh) */
+        /* Checkbox di Tabel Admin */
         .custom-checkbox {
             appearance: none;
             -webkit-appearance: none;
@@ -181,7 +181,7 @@
             margin-bottom: 1.5px;
         }
 
-        /* Checkbox Portal Peserta (terkunci permanen & berubah warna setelah tersimpan) */
+        /* Checkbox Portal Peserta */
         .portal-checkbox {
             appearance: none;
             -webkit-appearance: none;
@@ -239,7 +239,6 @@
             box-shadow: none;
         }
 
-        /* Sembunyikan ikon panah ke bawah / kalender bawaan input date */
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="date"]::-webkit-inner-spin-button,
         input[type="date"]::-webkit-clear-button,
@@ -260,7 +259,7 @@
         @media print {
             @page {
                 size: auto;
-                margin: 5mm;
+                margin: 6mm;
             }
             .no-print {
                 display: none !important;
@@ -288,13 +287,14 @@
             .print-header-banner {
                 display: block !important;
                 width: 100% !important;
-                margin-bottom: 6px !important;
+                margin-bottom: 7px !important;
                 border-bottom: 2px solid #0f172a !important;
                 padding-bottom: 4px !important;
             }
             #printDocTitle {
-                font-size: 13px !important;
+                font-size: 13.5px !important;
                 color: #000000 !important;
+                letter-spacing: 0.03em !important;
             }
             #printDocPeriod {
                 font-size: 11px !important;
@@ -344,7 +344,7 @@
                 box-shadow: none !important;
             }
             #checklistTable tbody tr td {
-                height: 21px !important;
+                height: 22px !important;
             }
             #checklistTable tbody tr:last-child td {
                 border-bottom: 1.5px solid #0f172a !important;
@@ -370,15 +370,15 @@
                 color: #000000 !important;
                 font-size: 8px !important;
                 font-weight: 800 !important;
-                padding: 2.5px 2px !important;
+                padding: 3px 2px !important;
             }
             #checklistTable tfoot td {
                 background-color: #f1f5f9 !important;
                 color: #0f172a !important;
                 border: 1px solid #334155 !important;
                 border-top: 1.5px solid #0f172a !important;
-                padding: 4px 3px !important;
-                height: 20px !important;
+                padding: 4.5px 3px !important;
+                height: 21px !important;
                 vertical-align: middle !important;
             }
             #checklistTable tfoot tr:last-child td {
@@ -395,6 +395,10 @@
             }
             #checklistTable input[type="text"]::placeholder {
                 color: transparent !important;
+            }
+            #checklistTable td.print-ttd-col img {
+                max-height: 18px !important;
+                max-width: 95% !important;
             }
             .custom-checkbox {
                 width: 13px !important;
@@ -415,7 +419,7 @@
                 padding: 5px 4px !important;
             }
             #checklistTable tbody tr td {
-                height: 22px !important;
+                height: 23px !important;
             }
             #checklistTable th:nth-child(1),
             #checklistTable td:nth-child(1) {
@@ -425,18 +429,18 @@
             }
             #checklistTable th:nth-child(2),
             #checklistTable td:nth-child(2) {
-                width: 19% !important;
+                width: 18.5% !important;
                 min-width: 0 !important;
                 max-width: none !important;
             }
             #checklistTable th.print-day-group {
-                width: 6.4% !important;
+                width: 6.5% !important;
                 min-width: 0 !important;
                 max-width: none !important;
             }
             #checklistTable th.print-slot-col,
             #checklistTable td.print-slot-col {
-                width: 3.2% !important;
+                width: 3.25% !important;
                 min-width: 0 !important;
                 max-width: none !important;
                 padding-left: 1px !important;
@@ -464,10 +468,9 @@
             }
             #checklistTable th:last-child,
             #checklistTable td:last-child {
-                width: 11.9% !important;
+                width: 11.7% !important;
                 min-width: 0 !important;
             }
-            /* Proporsi khusus saat cetak Uang Jajan (7 kolom tanpa kolom hari) */
             #checklistTable.allowance-print-table th:nth-child(1),
             #checklistTable.allowance-print-table td:nth-child(1) {
                 width: 26px !important;
@@ -627,7 +630,7 @@
     <div id="adminWorkspace" class="hidden min-h-screen flex-col">
 
         <main class="flex-1 max-w-7xl w-full mx-auto px-2 py-2 sm:px-4 sm:py-2.5 flex flex-col">
-            <!-- Header Khusus Tampilan Cetak (Otomatis Muncul Saat Print / Simpan PDF) -->
+            <!-- Header Khusus Tampilan Cetak -->
             <div class="print-header-banner hidden">
                 <div class="flex items-center justify-between">
                     <div>
@@ -680,7 +683,7 @@
                 </div>
             </div>
 
-            <div class="mb-1 px-0.5 flex flex-col no-print">
+            <div class="mb-1 px-0.5 flex flex-col">
                 <h1 id="tableSectionTitle" class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
                     Rekapan Pembayaran Catering
                 </h1>
@@ -688,7 +691,7 @@
                     <button 
                         type="button" 
                         id="btnOpenSetPeriodModal"
-                        class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-bold text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded inline-flex items-center gap-1 transition cursor-pointer leading-tight shrink-0"
+                        class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-bold text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded inline-flex items-center gap-1 transition cursor-pointer leading-tight shrink-0 no-print"
                     >
                         <i data-lucide="calendar" class="w-2.5 h-2.5"></i>
                         <span>Atur</span>
@@ -699,7 +702,7 @@
                 </div>
             </div>
 
-            <!-- Banner Mode Arsip (Muncul Saat Admin Membuka Arsip) -->
+            <!-- Banner Mode Arsip -->
             <div id="archiveModeBanner" class="hidden mb-1.5 bg-amber-100 border border-amber-400 rounded-md px-2.5 py-1.5 flex items-center justify-between gap-2 no-print">
                 <div class="flex items-center gap-1.5 min-w-0">
                     <span class="text-xs shrink-0">📂</span>
@@ -833,7 +836,7 @@
     </aside>
 
     <!-- ===================================================================== -->
-    <!-- MODAL-MODAL KONFIRMASI & FITUR (LATAR BELAKANG SOLID)                 -->
+    <!-- MODAL-MODAL KONFIRMASI & FITUR                                        -->
     <!-- ===================================================================== -->
 
     <div id="portalAdminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950">
@@ -1487,12 +1490,26 @@
             }, 0);
         }
 
-        function getCurrentWeekDates() {
+        function getCurrentWeekDates(baseStartIso = '') {
+            let referenceDate = new Date();
+            if (baseStartIso && typeof baseStartIso === 'string') {
+                const parts = baseStartIso.split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    const parsed = new Date(y, m, d);
+                    if (!isNaN(parsed.getTime())) {
+                        referenceDate = parsed;
+                    }
+                }
+            }
+
             const now = new Date();
-            const dayOfWeek = now.getDay();
+            const dayOfWeek = referenceDate.getDay();
             const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-            const monday = new Date(now);
-            monday.setDate(now.getDate() + diffToMonday);
+            const monday = new Date(referenceDate);
+            monday.setDate(referenceDate.getDate() + diffToMonday);
 
             const months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
             const fullDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -1516,15 +1533,16 @@
             return dates;
         }
 
-        const WEEK_DATES = getCurrentWeekDates();
+        let WEEK_DATES = getCurrentWeekDates();
 
         function getTodayDayColumn() {
             const now = new Date();
             const dayIdx = now.getDay();
             const colIndex = dayIdx === 0 ? 6 : dayIdx - 1;
+            const todayWeekDates = getCurrentWeekDates();
             return {
                 col: DAY_COLUMNS[colIndex],
-                dateInfo: WEEK_DATES[colIndex]
+                dateInfo: todayWeekDates[colIndex]
             };
         }
 
@@ -1584,29 +1602,10 @@
             if (endEl && document.activeElement !== endEl) {
                 endEl.value = periodRange.end || '';
             }
+            WEEK_DATES = getCurrentWeekDates(periodRange.start);
             updateFormattedDateBadges();
-        }
-
-        async function handlePeriodRangeChange() {
-            const startEl = document.getElementById('periodStartInput');
-            const endEl = document.getElementById('periodEndInput');
-            const nextStart = startEl ? startEl.value : '';
-            const nextEnd = endEl ? endEl.value : '';
-
-            periodRange = { start: nextStart, end: nextEnd };
-            updateFormattedDateBadges();
-
-            if (currentUser) {
-                setConnectionStatus('SYNCING');
-                try {
-                    await setDoc(getMetaDocRef(), {
-                        periodRange: { start: nextStart, end: nextEnd },
-                        updatedAt: Date.now()
-                    }, { merge: true });
-                    setConnectionStatus('ONLINE');
-                } catch (_) {
-                    setConnectionStatus('OFFLINE');
-                }
+            if (isAdminLoggedIn) {
+                renderTable([]);
             }
         }
 
@@ -1640,7 +1639,9 @@
             const nextEnd = periodEndEl ? periodEndEl.value : '';
 
             periodRange = { start: nextStart, end: nextEnd };
+            WEEK_DATES = getCurrentWeekDates(nextStart);
             updateFormattedDateBadges();
+            if (isAdminLoggedIn) renderTable([]);
             closeSetPeriodModal();
 
             if (currentUser) {
@@ -2967,6 +2968,7 @@
             const btnSwitch = document.getElementById('btnSwitchToAllowance');
             const tableContainer = document.querySelector('#adminWorkspace .table-container');
             const sectionTitleEl = document.getElementById('tableSectionTitle');
+            const tableEl = document.getElementById('checklistTable');
             if (!btnSwitch || !tableContainer) return;
 
             if (activeAdminSubTab === 'UANG_JAJAN') {
@@ -2974,11 +2976,13 @@
                 btnSwitch.className = 'btn-3d bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0';
                 tableContainer.classList.remove('ring-2', 'ring-indigo-400');
                 if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Uang Jajan';
+                if (tableEl) tableEl.classList.add('allowance-print-table');
             } else {
                 btnSwitch.textContent = 'Beralih ke Uang Jajan';
                 btnSwitch.className = 'btn-3d bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0';
                 tableContainer.classList.remove('ring-2', 'ring-indigo-400');
                 if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Pembayaran Catering';
+                if (tableEl) tableEl.classList.remove('allowance-print-table');
             }
         }
 
@@ -3151,13 +3155,16 @@
                     if (v2) count++;
                     return [v1 ? 'YA' : 'TIDAK', v2 ? 'YA' : 'TIDAK'];
                 });
+                const effectiveCount = activeAdminSubTab === 'UANG_JAJAN'
+                    ? getParticipantAllowanceDayCount(p.checks)
+                    : count;
                 return [
                     idx + 1,
                     `"${p.name.replace(/"/g, '""')}"`,
                     ...dayCells,
-                    count,
+                    effectiveCount,
                     activeRate,
-                    count * activeRate,
+                    effectiveCount * activeRate,
                     p.ttdDataUrl ? 'SUDAH TTD' : 'BELUM TTD',
                     `"${(p.ket || '').replace(/"/g, '""')}"`
                 ].join(',');
@@ -3986,7 +3993,7 @@
         }
 
         // =====================================================================
-        // AKSI TABEL ADMIN (CEKLIS, KETERANGAN, PESANAN HARIAN, TAMBAH, EDIT, HAPUS, RESET)
+        // AKSI TABEL ADMIN
         // =====================================================================
         window.handleToggleCheckbox = function(participantId, slotKey, checkboxEl) {
             if (isViewingArchiveMode && isArchiveReadOnly) {
@@ -4351,7 +4358,6 @@
         // RENDER TABEL UTAMA
         // =====================================================================
         function renderTable(changedCells = []) {
-            const tableEl = document.getElementById('checklistTable');
             const headerRow = document.getElementById('tableHeaderRow');
             const subHeaderRow = document.getElementById('tableSubHeaderRow');
             const tbody = document.getElementById('tableBody');
@@ -4359,9 +4365,6 @@
             if (!headerRow || !subHeaderRow || !tbody || !tfoot) return;
 
             const isAllowanceTab = activeAdminSubTab === 'UANG_JAJAN';
-            if (tableEl) {
-                tableEl.classList.toggle('allowance-print-table', isAllowanceTab);
-            }
             const activeRate = isAllowanceTab ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
             const rateColumnHeader = isAllowanceTab ? 'RP 15.000' : 'RP 13.000';
 
@@ -4384,10 +4387,10 @@
                     const subBg = 'bg-slate-50 text-slate-500';
 
                     headerHtml += `
-                        <th colspan="2" class="print-day-group sticky-header py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
+                        <th colspan="2" class="sticky-header print-day-group py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
                             <div class="flex flex-col items-center justify-center leading-tight">
                                 <span class="print-day-name text-[8px] sm:text-[9px] font-extrabold tracking-wide uppercase">${col.full}</span>
-                                <span class="print-date-text text-[7.5px] sm:text-[8px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-900' : 'text-slate-700'}">
+                                <span class="print-date-text text-[7.5px] sm:text-[8px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-900 font-extrabold' : 'text-slate-700'}">
                                     ${dateInfo.fullDateLabel}
                                 </span>
                             </div>
@@ -4395,10 +4398,10 @@
                     `;
 
                     subHeaderHtml += `
-                        <th class="print-slot-col sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-200 ${subBg}" title="${col.full} - Pagi">
+                        <th class="sticky-subheader print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-200 ${subBg}" title="${col.full} - Pagi">
                             Pagi
                         </th>
-                        <th class="print-slot-col sticky-subheader w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-300 ${subBg}" title="${col.full} - Sore">
+                        <th class="sticky-subheader print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-300 ${subBg}" title="${col.full} - Sore">
                             Sore
                         </th>
                     `;
@@ -4419,16 +4422,16 @@
                 : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Cuti)" class="sticky-header bg-slate-100 text-slate-700 w-[64px] min-w-[64px] py-0.5 px-1 text-[8px] sm:text-[9px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
 
             headerHtml += `
-                <th rowspan="2" class="print-jmlh-col sticky-header bg-slate-100 text-slate-700 w-[30px] min-w-[30px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[30px] min-w-[30px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
                     JMLH
                 </th>
-                <th rowspan="2" class="print-rate-col sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300 whitespace-nowrap">
+                <th rowspan="2" class="sticky-header print-rate-col bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300 whitespace-nowrap">
                     ${rateColumnHeader}
                 </th>
-                <th rowspan="2" class="print-total-col sticky-header bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-total-col bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300">
                     TOTAL
                 </th>
-                <th rowspan="2" class="print-ttd-col sticky-header bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-ttd-col bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
                     TTD
                 </th>
                 <th rowspan="2" ${ketHeaderAttrs}>
@@ -4622,16 +4625,16 @@
                 });
 
                 ordersRowHtml += `
-                    <td id="dailyOrdersJmlhCell" class="py-0.5 px-0.5 text-center font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] border-r border-amber-300">
+                    <td id="dailyOrdersJmlhCell" class="print-jmlh-col py-0.5 px-0.5 text-center font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] border-r border-amber-300">
                         ${totalOrdersSum}
                     </td>
-                    <td class="py-0.5 px-1 text-right font-bold text-amber-950 bg-amber-100 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-amber-200">
+                    <td class="print-rate-col py-0.5 px-1 text-right font-bold text-amber-950 bg-amber-100 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-amber-200">
                         ${formatRupiah(activeRate)}
                     </td>
-                    <td id="dailyOrdersTotalRpCell" class="py-0.5 px-1 text-right font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-amber-300">
+                    <td id="dailyOrdersTotalRpCell" class="print-total-col py-0.5 px-1 text-right font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-amber-300">
                         ${formatRupiah(totalOrdersSum * activeRate)}
                     </td>
-                    <td class="py-0.5 px-0.5 bg-amber-100 border-r border-amber-200"></td>
+                    <td class="print-ttd-col py-0.5 px-0.5 bg-amber-100 border-r border-amber-200"></td>
                     <td class="py-0.5 px-0.5 bg-amber-100"></td>
                 </tr>
                 `;
@@ -4686,7 +4689,6 @@
         updateRoleView();
         initAuthAndRealtime();
 
-        // Daftarkan Web App Manifest dinamis agar siap diinstal sebagai PWA saat di-host di HTTPS
         try {
             const manifestObj = {
                 name: document.title || 'Ceklis Harian Real-Time Multi-User',
@@ -4731,4 +4733,4 @@
         } catch (_) {}
     </script>
 </body>
-                            </html>
+    </html>
