@@ -467,6 +467,44 @@
                 width: 11.9% !important;
                 min-width: 0 !important;
             }
+            /* Proporsi khusus saat cetak Uang Jajan (7 kolom tanpa kolom hari) */
+            #checklistTable.allowance-print-table th:nth-child(1),
+            #checklistTable.allowance-print-table td:nth-child(1) {
+                width: 26px !important;
+                min-width: 26px !important;
+                max-width: 26px !important;
+            }
+            #checklistTable.allowance-print-table th:nth-child(2),
+            #checklistTable.allowance-print-table td:nth-child(2) {
+                width: 23% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+            }
+            #checklistTable.allowance-print-table th.print-jmlh-col,
+            #checklistTable.allowance-print-table td.print-jmlh-col {
+                width: 5% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable.allowance-print-table th.print-rate-col,
+            #checklistTable.allowance-print-table td.print-rate-col {
+                width: 9% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable.allowance-print-table th.print-total-col,
+            #checklistTable.allowance-print-table td.print-total-col {
+                width: 10% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable.allowance-print-table th.print-ttd-col,
+            #checklistTable.allowance-print-table td.print-ttd-col {
+                width: 7% !important;
+                min-width: 0 !important;
+            }
+            #checklistTable.allowance-print-table th:last-child,
+            #checklistTable.allowance-print-table td:last-child {
+                width: auto !important;
+                min-width: 0 !important;
+            }
         }
     </style>
 </head>
@@ -4313,6 +4351,7 @@
         // RENDER TABEL UTAMA
         // =====================================================================
         function renderTable(changedCells = []) {
+            const tableEl = document.getElementById('checklistTable');
             const headerRow = document.getElementById('tableHeaderRow');
             const subHeaderRow = document.getElementById('tableSubHeaderRow');
             const tbody = document.getElementById('tableBody');
@@ -4320,6 +4359,9 @@
             if (!headerRow || !subHeaderRow || !tbody || !tfoot) return;
 
             const isAllowanceTab = activeAdminSubTab === 'UANG_JAJAN';
+            if (tableEl) {
+                tableEl.classList.toggle('allowance-print-table', isAllowanceTab);
+            }
             const activeRate = isAllowanceTab ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
             const rateColumnHeader = isAllowanceTab ? 'RP 15.000' : 'RP 13.000';
 
@@ -4689,4 +4731,4 @@
         } catch (_) {}
     </script>
 </body>
-                        </html>
+                            </html>
