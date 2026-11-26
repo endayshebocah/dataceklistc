@@ -122,54 +122,95 @@
             border-color: #111827;
         }
 
-        /* Penanda warna kotak checkbox saat hari dipilih pada Input Status */
-        .status-marked-izin {
-            background-color: #ccfbf1 !important;
-        }
+        /* Penanda ikon indikator titik bulat langsung di dalam kotak checkbox sesuai kategori */
         .status-marked-izin .custom-checkbox {
-            border-color: #0f766e;
-            background-color: #f0fdfa;
+            border-color: #0d9488;
+        }
+        .status-marked-izin .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #14b8a6;
         }
 
-        .status-marked-sakit {
-            background-color: #fef3c7 !important;
-        }
         .status-marked-sakit .custom-checkbox {
-            border-color: #b45309;
-            background-color: #fffbeb;
+            border-color: #d97706;
+        }
+        .status-marked-sakit .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #f59e0b;
         }
 
-        .status-marked-alfa {
-            background-color: #ffe4e6 !important;
-        }
         .status-marked-alfa .custom-checkbox {
-            border-color: #be123c;
-            background-color: #fff1f2;
+            border-color: #e11d48;
+        }
+        .status-marked-alfa .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #f43f5e;
         }
 
-        .status-marked-cuti {
-            background-color: #e0e7ff !important;
-        }
         .status-marked-cuti .custom-checkbox {
-            border-color: #4338ca;
-            background-color: #eef2ff;
+            border-color: #4f46e5;
+        }
+        .status-marked-cuti .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #6366f1;
         }
 
-        .status-marked-resign {
-            background-color: #f3e8ff !important;
-        }
         .status-marked-resign .custom-checkbox {
-            border-color: #7e22ce;
-            background-color: #faf5ff;
+            border-color: #9333ea;
+        }
+        .status-marked-resign .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #a855f7;
         }
 
-        .status-marked-lulus {
-            background-color: #dcfce7 !important;
-        }
         .status-marked-lulus .custom-checkbox {
-            border-color: #15803d;
-            background-color: #f0fdf4;
+            border-color: #16a34a;
         }
+        .status-marked-lulus .custom-checkbox:not(:checked)::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 9999px;
+            background-color: #10b981;
+        }
+
+        /* Indikator titik bulat kecil di pojok kotak checkbox apabila kotak juga tercentang */
+        .status-marked-izin .custom-checkbox:checked::before,
+        .status-marked-sakit .custom-checkbox:checked::before,
+        .status-marked-alfa .custom-checkbox:checked::before,
+        .status-marked-cuti .custom-checkbox:checked::before,
+        .status-marked-resign .custom-checkbox:checked::before,
+        .status-marked-lulus .custom-checkbox:checked::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 6.5px;
+            height: 6.5px;
+            border-radius: 9999px;
+            border: 1px solid #ffffff;
+        }
+        .status-marked-izin .custom-checkbox:checked::before { background-color: #14b8a6; }
+        .status-marked-sakit .custom-checkbox:checked::before { background-color: #f59e0b; }
+        .status-marked-alfa .custom-checkbox:checked::before { background-color: #f43f5e; }
+        .status-marked-cuti .custom-checkbox:checked::before { background-color: #6366f1; }
+        .status-marked-resign .custom-checkbox:checked::before { background-color: #a855f7; }
+        .status-marked-lulus .custom-checkbox:checked::before { background-color: #10b981; }
 
         .custom-checkbox:checked::after {
             content: "";
@@ -4847,4 +4888,4 @@
         } catch (_) {}
     </script>
 </body>
-    </html>
+                            </html>
