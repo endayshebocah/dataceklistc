@@ -55,7 +55,7 @@
 
         .sticky-col-name {
             position: sticky;
-            left: 20px;
+            left: 24px;
             z-index: 15;
             background-color: inherit;
             box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.15);
@@ -73,7 +73,7 @@
         .sticky-corner-name {
             position: sticky;
             top: 0;
-            left: 20px;
+            left: 24px;
             z-index: 35;
             background-color: #f1f5f9;
             color: #334155;
@@ -82,7 +82,7 @@
 
         .sticky-subheader {
             position: sticky;
-            top: 26px;
+            top: 30px;
             z-index: 20;
         }
 
@@ -98,8 +98,8 @@
         .custom-checkbox {
             appearance: none;
             -webkit-appearance: none;
-            width: 15px;
-            height: 15px;
+            width: 16px;
+            height: 16px;
             border: 1px solid #9ca3af;
             border-radius: 3.5px;
             background-color: #ffffff;
@@ -173,10 +173,10 @@
 
         .custom-checkbox:checked::after {
             content: "";
-            width: 4px;
-            height: 8px;
+            width: 4.5px;
+            height: 8.5px;
             border: solid #ffffff;
-            border-width: 0 1.4px 1.4px 0;
+            border-width: 0 1.5px 1.5px 0;
             transform: rotate(45deg);
             margin-bottom: 1.5px;
         }
@@ -641,64 +641,109 @@
                 </div>
             </div>
 
-            <div class="mb-2 flex flex-col lg:flex-row lg:items-center justify-between bg-slate-100 border border-slate-300 rounded-md px-2 py-1 text-[9px] no-print gap-1.5">
-                <div class="flex items-end gap-1 flex-wrap w-full">
+            <!-- Toolbar Atas dengan Tata Letak Rapi & Segmented Control -->
+            <div class="mb-2 flex flex-col sm:flex-row sm:items-center justify-between bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 shadow-2xs no-print gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap">
                     <button 
                         type="button" 
                         id="btnOpenNavDrawer"
                         aria-label="Buka Menu Navigasi"
-                        class="btn-3d bg-slate-900 hover:bg-slate-800 text-white font-bold h-6 px-2 rounded inline-flex items-center justify-center shrink-0 transition cursor-pointer"
+                        class="btn-3d bg-slate-900 hover:bg-slate-800 text-white font-bold h-7 px-2 rounded-md inline-flex items-center justify-center shrink-0 transition cursor-pointer"
                     >
                         <i data-lucide="menu" class="w-3.5 h-3.5"></i>
                     </button>
 
-                    <div id="connectionBadge" aria-label="Status Koneksi" title="Status Koneksi" class="flex items-center justify-center bg-amber-950/90 border border-amber-600/80 h-6 w-6 rounded shrink-0 leading-none">
-                        <span id="connectionDot" class="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
-                        <span id="connectionText" class="sr-only">MENGHUBUNGKAN...</span>
-                    </div>
                     <button 
                         type="button" 
                         id="btnSaveArchiveData"
-                        class="btn-3d bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
+                        class="btn-3d bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] h-7 px-3 rounded-md inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
                     >
-                        <span id="btnSaveArchiveLabel">SIMPAN DATA</span>
+                        <span id="btnSaveArchiveLabel">SIMPAN</span>
                     </button>
+
                     <button 
                         type="button" 
-                        id="btnSwitchToAllowance"
-                        class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
+                        id="btnOpenBulkModal"
+                        class="btn-3d bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[10px] h-7 px-2.5 rounded-md inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
                     >
-                        <span>Beralih ke Uang Jajan</span>
+                        <i data-lucide="user-plus" class="w-3 h-3 shrink-0"></i>
+                        <span>Tambah Peserta Baru</span>
                     </button>
-                    <div class="relative flex-1 min-w-[130px] sm:flex-initial sm:w-44">
-                        <i data-lucide="search" class="w-3 h-3 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            inputmode="text"
-                            placeholder="Cari nama peserta..." 
-                            class="w-full h-6 pl-6 pr-2 text-[9px] font-medium text-slate-900 bg-white border border-slate-300 rounded focus:outline-none focus:border-blue-600 transition"
+
+                    <!-- Segmented Control Mode Tabel -->
+                    <div class="inline-flex items-center bg-slate-100 border border-slate-300 p-0.5 rounded-md shrink-0">
+                        <button 
+                            type="button" 
+                            id="btnTabCatering"
+                            class="px-2.5 py-1 rounded text-[10px] font-extrabold bg-slate-900 text-white shadow-2xs transition cursor-pointer leading-none"
                         >
+                            📋 Catering
+                        </button>
+                        <button 
+                            type="button" 
+                            id="btnSwitchToAllowance"
+                            class="px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none"
+                        >
+                            💵 Uang Jajan
+                        </button>
                     </div>
+
+                    <span id="connectionBadge" aria-label="Status Koneksi" title="Menghubungkan..." class="inline-flex items-center justify-center w-4 h-7 shrink-0">
+                        <span id="connectionDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
+                    </span>
+                </div>
+
+                <!-- Kolom Pencarian di Sisi Kanan -->
+                <div class="relative w-full sm:w-56">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        inputmode="text"
+                        placeholder="Cari nama peserta..." 
+                        class="w-full h-7 pl-8 pr-2.5 text-[11px] font-medium text-slate-900 bg-slate-50 border border-slate-300 rounded-md focus:outline-none focus:border-blue-600 focus:bg-white transition"
+                    >
                 </div>
             </div>
 
-            <div class="mb-1 px-0.5 flex flex-col">
-                <h1 id="tableSectionTitle" class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
-                    Rekapan Pembayaran Catering
-                </h1>
-                <div class="mt-0.5 flex items-center gap-1.5 flex-wrap">
-                    <button 
-                        type="button" 
-                        id="btnOpenSetPeriodModal"
-                        class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-bold text-[8.5px] sm:text-[9px] px-2 py-0.5 rounded inline-flex items-center gap-1 transition cursor-pointer leading-tight shrink-0 no-print"
-                    >
-                        <i data-lucide="calendar" class="w-2.5 h-2.5"></i>
-                        <span>Atur</span>
-                    </button>
-                    <p id="tableSectionPeriod" class="text-[9px] sm:text-[10px] font-semibold text-slate-600 leading-tight">
-                        Periode : -
-                    </p>
+            <!-- Bar Judul, Periode & Legenda Warna Status -->
+            <div class="mb-1.5 px-0.5 flex flex-col sm:flex-row sm:items-end justify-between gap-1.5">
+                <div>
+                    <h1 id="tableSectionTitle" class="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
+                        Rekapan Pembayaran Catering
+                    </h1>
+                    <div class="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <button 
+                            type="button" 
+                            id="btnOpenSetPeriodModal"
+                            class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 font-bold text-[9px] sm:text-[10px] px-2 py-0.5 rounded inline-flex items-center gap-1 transition cursor-pointer leading-tight shrink-0 no-print"
+                        >
+                            <i data-lucide="calendar" class="w-2.5 h-2.5"></i>
+                            <span>Atur</span>
+                        </button>
+                        <p id="tableSectionPeriod" class="text-[10px] sm:text-[11px] font-semibold text-slate-600 leading-tight">
+                            Periode : -
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Legenda Warna Status Harian -->
+                <div id="statusColorLegend" class="flex items-center flex-wrap gap-1.5 text-[9px] sm:text-[10px] font-bold text-slate-600 no-print">
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                        <span class="w-2 h-2 rounded-full bg-teal-500"></span>Izin
+                    </span>
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>Sakit
+                    </span>
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>Alfa
+                    </span>
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>Resign
+                    </span>
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Lulus
+                    </span>
                 </div>
             </div>
 
@@ -719,11 +764,11 @@
                 </button>
             </div>
 
-            <div class="table-container bg-white border border-slate-300 rounded overflow-auto max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-130px)] flex-1 relative">
+            <div class="table-container bg-white border border-slate-300 rounded-lg shadow-2xs overflow-auto max-h-[calc(100vh-155px)] sm:max-h-[calc(100vh-140px)] flex-1 relative">
                 <table class="w-full border-collapse text-left select-none" id="checklistTable">
                     <thead id="tableHead">
                         <tr id="tableHeaderRow" class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider"></tr>
-                        <tr id="tableSubHeaderRow" class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider"></tr>
+                        <tr id="tableSubHeaderRow" class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider"></tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-200 text-[11px] sm:text-xs">
                         <tr id="loadingRow">
@@ -772,12 +817,6 @@
             </div>
 
             <div class="space-y-2">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                    <button type="button" id="btnOpenBulkModal" class="w-auto inline-flex items-center gap-1 bg-slate-700 hover:bg-slate-800 text-white font-bold text-[10px] py-1 px-2.5 rounded-md text-left transition cursor-pointer">
-                        Tambah Peserta Baru
-                    </button>
-                </div>
-
                 <button type="button" id="btnOpenAdminModal" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
                     <span>Menu Admin</span>
                     <span id="adminCountBadge" class="text-[10px] bg-indigo-800/80 px-1.5 py-0.5 rounded">1</span>
@@ -819,14 +858,6 @@
                 <button type="button" id="btnDeleteAllActiveRows" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
                     <span>🗑️</span>
                     <span>Hapus Semua Baris Kolom</span>
-                </button>
-
-                <button type="button" id="btnInstallAppFromDrawer" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
-                    <span class="flex items-center gap-2">
-                        <span>📲</span>
-                        <span>Install Aplikasi</span>
-                    </span>
-                    <span id="installAppStatusBadge" class="text-[9px] bg-cyan-800/80 px-1.5 py-0.5 rounded uppercase">PWA</span>
                 </button>
             </div>
 
@@ -1843,24 +1874,17 @@
         function setConnectionStatus(status) {
             const badge = document.getElementById('connectionBadge');
             const dot = document.getElementById('connectionDot');
-            const text = document.getElementById('connectionText');
-            if (!badge || !dot || !text) return;
+            if (!badge || !dot) return;
 
             if (status === 'ONLINE') {
-                badge.className = 'flex items-center justify-center bg-emerald-950/90 border border-emerald-500/80 h-6 w-6 rounded shrink-0 leading-none';
                 badge.title = 'Terhubung';
-                dot.className = 'w-2 h-2 rounded-full bg-emerald-400 shrink-0';
-                text.textContent = 'TERHUBUNG';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0';
             } else if (status === 'SYNCING') {
-                badge.className = 'flex items-center justify-center bg-sky-950/90 border border-sky-500/80 h-6 w-6 rounded shrink-0 leading-none';
                 badge.title = 'Menyimpan...';
-                dot.className = 'w-2 h-2 rounded-full bg-sky-400 animate-ping shrink-0';
-                text.textContent = 'MENYIMPAN...';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-500 animate-ping shrink-0';
             } else {
-                badge.className = 'flex items-center justify-center bg-red-950/90 border border-red-500/80 h-6 w-6 rounded shrink-0 leading-none';
                 badge.title = 'Terputus';
-                dot.className = 'w-2 h-2 rounded-full bg-red-500 shrink-0';
-                text.textContent = 'TERPUTUS';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0';
             }
         }
 
@@ -2956,6 +2980,7 @@
                 isAdminLoggedIn = true;
                 loggedInAdminName = matchedAdmin ? matchedAdmin.name : enteredName;
                 closePortalLoginModal();
+                applyAdminSubTabMode();
                 updateRoleView();
                 showToast(`Masuk sebagai ${loggedInAdminName}`);
             } else {
@@ -2968,40 +2993,51 @@
             isAdminLoggedIn = false;
             loggedInAdminName = 'ADMIN';
             activeAdminSubTab = 'CEKLIS';
+            applyAdminSubTabMode();
             updateRoleView();
             showToast("Anda telah keluar dari mode Admin");
         });
 
         function applyAdminSubTabMode() {
-            const btnSwitch = document.getElementById('btnSwitchToAllowance');
-            const tableContainer = document.querySelector('#adminWorkspace .table-container');
+            const btnCatering = document.getElementById('btnTabCatering');
+            const btnAllowance = document.getElementById('btnSwitchToAllowance');
+            const legendEl = document.getElementById('statusColorLegend');
             const sectionTitleEl = document.getElementById('tableSectionTitle');
             const tableEl = document.getElementById('checklistTable');
-            if (!btnSwitch || !tableContainer) return;
 
             if (activeAdminSubTab === 'UANG_JAJAN') {
-                btnSwitch.textContent = 'Kembali ke Ceklis';
-                btnSwitch.className = 'btn-3d bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0';
-                tableContainer.classList.remove('ring-2', 'ring-indigo-400');
+                if (btnCatering) {
+                    btnCatering.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none';
+                }
+                if (btnAllowance) {
+                    btnAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-indigo-600 text-white shadow-2xs transition cursor-pointer leading-none';
+                }
+                if (legendEl) legendEl.classList.add('hidden');
                 if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Uang Jajan';
                 if (tableEl) tableEl.classList.add('allowance-print-table');
             } else {
-                btnSwitch.textContent = 'Beralih ke Uang Jajan';
-                btnSwitch.className = 'btn-3d bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[8px] h-6 px-2 rounded inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0';
-                tableContainer.classList.remove('ring-2', 'ring-indigo-400');
+                if (btnCatering) {
+                    btnCatering.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-slate-900 text-white shadow-2xs transition cursor-pointer leading-none';
+                }
+                if (btnAllowance) {
+                    btnAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none';
+                }
+                if (legendEl) legendEl.classList.remove('hidden');
                 if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Pembayaran Catering';
                 if (tableEl) tableEl.classList.remove('allowance-print-table');
             }
         }
 
+        document.getElementById('btnTabCatering').addEventListener('click', () => {
+            if (activeAdminSubTab === 'CEKLIS') return;
+            activeAdminSubTab = 'CEKLIS';
+            applyAdminSubTabMode();
+            renderTable([]);
+            showToast("Menampilkan Rekapan Catering");
+        });
+
         document.getElementById('btnSwitchToAllowance').addEventListener('click', () => {
-            if (activeAdminSubTab === 'UANG_JAJAN') {
-                activeAdminSubTab = 'CEKLIS';
-                applyAdminSubTabMode();
-                renderTable([]);
-                showToast("Kembali ke tampilan Ceklis Harian");
-                return;
-            }
+            if (activeAdminSubTab === 'UANG_JAJAN') return;
 
             activeAdminSubTab = 'UANG_JAJAN';
             applyAdminSubTabMode();
@@ -3438,7 +3474,7 @@
                 btnSaveArchive.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                 btnSaveArchive.classList.add('bg-amber-600', 'hover:bg-amber-700');
             } else {
-                labelEl.textContent = 'SIMPAN DATA';
+                labelEl.textContent = 'SIMPAN';
                 btnSaveArchive.classList.remove('bg-amber-600', 'hover:bg-amber-700');
                 btnSaveArchive.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
             }
@@ -4003,6 +4039,69 @@
         // =====================================================================
         // AKSI TABEL ADMIN
         // =====================================================================
+        window.handleColumnQuickToggle = function(slotKey, sessionLabel) {
+            if (isViewingArchiveMode && isArchiveReadOnly) {
+                showToast("Arsip dibuka dalam mode Lihat Saja (Read-Only)", true);
+                return;
+            }
+            if (!currentUser && !isViewingArchiveMode) {
+                showToast("Menunggu koneksi server...", true);
+                return;
+            }
+
+            const targetList = searchQuery
+                ? participantsData.filter(p => p.name.includes(searchQuery))
+                : participantsData;
+
+            if (targetList.length === 0) {
+                showToast("Tidak ada peserta pada daftar ini", true);
+                return;
+            }
+
+            const allChecked = targetList.every(p => !!(p.checks && p.checks[slotKey]));
+            const nextState = !allChecked;
+
+            openConfirmPopup({
+                title: nextState ? `Centang Semua (${sessionLabel})` : `Kosongkan Semua (${sessionLabel})`,
+                message: nextState
+                    ? `Beri centang pada sesi ${sessionLabel} untuk seluruh peserta yang ditampilkan?`
+                    : `Hapus centang pada sesi ${sessionLabel} untuk seluruh peserta yang ditampilkan?`,
+                detail: `Sesi: ${sessionLabel} • Target: ${targetList.length} peserta`,
+                confirmText: nextState ? 'Ya, Centang Semua' : 'Ya, Kosongkan Semua',
+                confirmClass: nextState
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    : 'bg-amber-600 hover:bg-amber-700 text-white',
+                onConfirm: async () => {
+                    targetList.forEach(p => {
+                        p.checks = { ...(p.checks || getEmptyChecksObject()), [slotKey]: nextState };
+                    });
+
+                    if (isViewingArchiveMode) {
+                        renderTable([]);
+                        showToast(nextState ? `Semua ${sessionLabel} dicentang` : `Semua ${sessionLabel} dikosongkan`);
+                        return;
+                    }
+
+                    setConnectionStatus('SYNCING');
+                    try {
+                        await commitChunkedOperations(targetList, (batch, p) => {
+                            batch.update(getParticipantDocRef(p.id), {
+                                [`checks.${slotKey}`]: nextState,
+                                updatedAt: Date.now(),
+                                updatedBy: getCurrentActorLabel()
+                            });
+                        });
+                        renderTable([]);
+                        setConnectionStatus('ONLINE');
+                        showToast(nextState ? `Semua ${sessionLabel} dicentang` : `Semua ${sessionLabel} dikosongkan`);
+                    } catch (_) {
+                        setConnectionStatus('OFFLINE');
+                        showToast("Gagal memperbarui ceklis kolom", true);
+                    }
+                }
+            });
+        };
+
         window.handleToggleCheckbox = function(participantId, slotKey, checkboxEl) {
             if (isViewingArchiveMode && isArchiveReadOnly) {
                 checkboxEl.checked = !checkboxEl.checked;
@@ -4377,10 +4476,10 @@
             const rateColumnHeader = isAllowanceTab ? 'RP 15.000' : 'RP 13.000';
 
             let headerHtml = `
-                <th rowspan="2" class="sticky-corner-no bg-slate-100 text-slate-700 w-[20px] min-w-[20px] max-w-[20px] py-1 px-0 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-corner-no bg-slate-100 text-slate-700 w-[24px] min-w-[24px] max-w-[24px] py-1.5 px-0 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     NO
                 </th>
-                <th rowspan="2" class="sticky-corner-name bg-slate-100 text-slate-700 w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] py-1 px-1 text-[8px] sm:text-[9px] text-left border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-corner-name bg-slate-100 text-slate-700 w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] py-1.5 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-r border-slate-300">
                     NAMA PESERTA
                 </th>
             `;
@@ -4391,14 +4490,18 @@
                 DAY_COLUMNS.forEach((col, index) => {
                     const dateInfo = WEEK_DATES[index];
                     const isToday = dateInfo.isToday;
-                    const dayHeaderBg = isToday ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-700';
-                    const subBg = 'bg-slate-50 text-slate-500';
+                    const dayHeaderBg = isToday
+                        ? 'bg-blue-100/90 text-blue-950 border-t-2 border-t-blue-600'
+                        : 'bg-slate-100 text-slate-700';
+                    const subBg = isToday
+                        ? 'bg-blue-50 text-blue-800'
+                        : 'bg-slate-50 text-slate-600';
 
                     headerHtml += `
-                        <th colspan="2" class="sticky-header print-day-group py-1 px-0.5 text-center border-r border-slate-300 ${dayHeaderBg}">
+                        <th colspan="2" class="sticky-header print-day-group py-1.5 px-1 text-center border-r border-slate-300 ${dayHeaderBg}">
                             <div class="flex flex-col items-center justify-center leading-tight">
-                                <span class="print-day-name text-[8px] sm:text-[9px] font-extrabold tracking-wide uppercase">${col.full}</span>
-                                <span class="print-date-text text-[7.5px] sm:text-[8px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-slate-900 font-extrabold' : 'text-slate-700'}">
+                                <span class="print-day-name text-[9.5px] sm:text-[10.5px] font-extrabold tracking-wide uppercase">${col.full}</span>
+                                <span class="print-date-text text-[8.5px] sm:text-[9px] font-bold mt-0.5 whitespace-nowrap ${isToday ? 'text-blue-900 font-extrabold' : 'text-slate-600'}">
                                     ${dateInfo.fullDateLabel}
                                 </span>
                             </div>
@@ -4406,10 +4509,10 @@
                     `;
 
                     subHeaderHtml += `
-                        <th class="sticky-subheader print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-200 ${subBg}" title="${col.full} - Pagi">
+                        <th onclick="handleColumnQuickToggle('${col.slot1}', '${col.full} - Pagi')" class="sticky-subheader print-slot-col w-[26px] min-w-[26px] sm:w-[30px] sm:min-w-[30px] py-1 px-0 leading-none text-[8.5px] sm:text-[9.5px] font-bold normal-case text-center border-b border-r border-slate-200 cursor-pointer hover:bg-emerald-100 hover:text-emerald-900 transition select-none ${subBg}" title="Klik untuk Centang / Kosongkan semua peserta pada ${col.full} - Pagi">
                             Pagi
                         </th>
-                        <th class="sticky-subheader print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-0.5 px-0 leading-none text-[7px] sm:text-[7.5px] font-semibold normal-case text-center border-b border-r border-slate-300 ${subBg}" title="${col.full} - Sore">
+                        <th onclick="handleColumnQuickToggle('${col.slot2}', '${col.full} - Sore')" class="sticky-subheader print-slot-col w-[26px] min-w-[26px] sm:w-[30px] sm:min-w-[30px] py-1 px-0 leading-none text-[8.5px] sm:text-[9.5px] font-bold normal-case text-center border-b border-r border-slate-300 cursor-pointer hover:bg-sky-100 hover:text-sky-900 transition select-none ${subBg}" title="Klik untuk Centang / Kosongkan semua peserta pada ${col.full} - Sore">
                             Sore
                         </th>
                     `;
@@ -4419,27 +4522,27 @@
             const ketHeaderContent = isAllowanceTab
                 ? `<span>KET</span>`
                 : `
-                    <span class="inline-flex items-center gap-0.5 underline decoration-slate-600 underline-offset-2">
+                    <span class="inline-flex items-center gap-1 underline decoration-slate-600 underline-offset-2">
                         <span>KET</span>
-                        <span class="text-[6.5px] px-0.5 rounded bg-slate-200 text-slate-800 font-extrabold no-print">MENU</span>
+                        <span class="text-[7.5px] px-1 py-0.5 rounded bg-slate-200 text-slate-800 font-extrabold no-print">MENU</span>
                     </span>
                 `;
 
             const ketHeaderAttrs = isAllowanceTab
-                ? `class="sticky-header bg-slate-100 text-slate-700 w-[64px] min-w-[64px] py-0.5 px-1 text-[8px] sm:text-[9px] text-left border-b border-slate-300"`
-                : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Cuti)" class="sticky-header bg-slate-100 text-slate-700 w-[64px] min-w-[64px] py-0.5 px-1 text-[8px] sm:text-[9px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
+                ? `class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300"`
+                : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Resign, Lulus)" class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
 
             headerHtml += `
-                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[30px] min-w-[30px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[34px] min-w-[34px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     JMLH
                 </th>
-                <th rowspan="2" class="sticky-header print-rate-col bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300 whitespace-nowrap">
+                <th rowspan="2" class="sticky-header print-rate-col bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-1 px-1 text-[9px] sm:text-[10px] text-right border-b border-r border-slate-300 whitespace-nowrap">
                     ${rateColumnHeader}
                 </th>
-                <th rowspan="2" class="sticky-header print-total-col bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-0.5 px-1 text-[8px] sm:text-[9px] text-right border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-total-col bg-slate-100 text-slate-700 w-[64px] min-w-[64px] py-1 px-1 text-[9px] sm:text-[10px] text-right border-b border-r border-slate-300">
                     TOTAL
                 </th>
-                <th rowspan="2" class="sticky-header print-ttd-col bg-slate-100 text-slate-700 w-[52px] min-w-[52px] py-0.5 px-0.5 text-[8px] sm:text-[9px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-ttd-col bg-slate-100 text-slate-700 w-[56px] min-w-[56px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     TTD
                 </th>
                 <th rowspan="2" ${ketHeaderAttrs}>
@@ -4492,7 +4595,7 @@
                         const isUpdated1 = changedSet.has(`${participant.id}_${col.slot1}`);
                         const isUpdated2 = changedSet.has(`${participant.id}_${col.slot2}`);
                         const isTodayCol = WEEK_DATES[colIdx].isToday;
-                        const cellBgClass = isTodayCol ? 'bg-blue-50/50' : '';
+                        const cellBgClass = isTodayCol ? 'bg-blue-50/70' : '';
 
                         const dayMarkCategory = participantMarks[col.key];
                         const markStyleClass = dayMarkCategory && STATUS_STYLES[dayMarkCategory]
@@ -4501,7 +4604,7 @@
                         const markTitleAttr = dayMarkCategory ? `title="Status ${dayMarkCategory} (${col.full})"` : '';
 
                         cellsHtml += `
-                            <td ${markTitleAttr} class="print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-200 ${cellBgClass} ${markStyleClass} ${isUpdated1 ? 'cell-updated' : ''}">
+                            <td ${markTitleAttr} class="print-slot-col w-[26px] min-w-[26px] sm:w-[30px] sm:min-w-[30px] py-1.5 px-0 text-center border-r border-slate-200 ${cellBgClass} ${markStyleClass} ${isUpdated1 ? 'cell-updated' : ''}">
                                 <label class="flex items-center justify-center w-full h-full py-0.5 px-0 m-0 cursor-pointer">
                                     <input 
                                         type="checkbox" 
@@ -4511,7 +4614,7 @@
                                     >
                                 </label>
                             </td>
-                            <td ${markTitleAttr} class="print-slot-col w-[22px] min-w-[22px] sm:w-[24px] sm:min-w-[24px] py-1 px-0 text-center border-r border-slate-300 ${cellBgClass} ${markStyleClass} ${isUpdated2 ? 'cell-updated' : ''}">
+                            <td ${markTitleAttr} class="print-slot-col w-[26px] min-w-[26px] sm:w-[30px] sm:min-w-[30px] py-1.5 px-0 text-center border-r border-slate-300 ${cellBgClass} ${markStyleClass} ${isUpdated2 ? 'cell-updated' : ''}">
                                 <label class="flex items-center justify-center w-full h-full py-0.5 px-0 m-0 cursor-pointer">
                                     <input 
                                         type="checkbox" 
@@ -4533,15 +4636,15 @@
                 grandTotalAmount += rowTotalAmount;
 
                 const ttdContent = participant.ttdDataUrl
-                    ? `<img src="${participant.ttdDataUrl}" alt="TTD ${escapeHtml(participant.name)}" onclick="openTtdPreview('${escapeHtml(participant.name).replace(/'/g, "\\'")}', '${participant.ttdDataUrl}')" class="h-4 w-auto max-w-[46px] mx-auto object-contain cursor-pointer">`
-                    : `<span class="text-[7.5px] text-slate-400">${idx + 1}. ...</span>`;
+                    ? `<img src="${participant.ttdDataUrl}" alt="TTD ${escapeHtml(participant.name)}" onclick="openTtdPreview('${escapeHtml(participant.name).replace(/'/g, "\\'")}', '${participant.ttdDataUrl}')" class="h-4.5 w-auto max-w-[50px] mx-auto object-contain cursor-pointer">`
+                    : `<span class="text-[9px] text-slate-400">${idx + 1}. ...</span>`;
 
                 bodyHtml += `
                     <tr class="${rowBg} hover:bg-amber-50/60 transition-colors">
-                        <td class="sticky-col-no w-[20px] min-w-[20px] max-w-[20px] py-0.5 px-0 text-center font-bold text-slate-500 text-[8.5px] sm:text-[9px] border-r border-slate-200">
+                        <td class="sticky-col-no w-[24px] min-w-[24px] max-w-[24px] py-1 px-0 text-center font-bold text-slate-500 text-[10px] sm:text-[11px] border-r border-slate-200">
                             ${idx + 1}
                         </td>
-                        <td class="sticky-col-name w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] py-0.5 px-1 font-bold text-slate-900 text-[8.5px] sm:text-[9.5px] uppercase border-r border-slate-300" title="${escapeHtml(participant.name)}${participant.updatedBy ? ` • Diubah oleh ${escapeHtml(participant.updatedBy)}` : ''}">
+                        <td class="sticky-col-name w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] py-1 px-1.5 font-bold text-slate-900 text-[10px] sm:text-[11.5px] uppercase border-r border-slate-300" title="${escapeHtml(participant.name)}${participant.updatedBy ? ` • Diubah oleh ${escapeHtml(participant.updatedBy)}` : ''}">
                             <div class="flex items-center justify-between gap-1">
                                 <span ondblclick="promptEditParticipant('${participant.id}', '${escapeHtml(participant.name).replace(/'/g, "\\'")}')" title="Klik 2x untuk ubah nama" class="truncate cursor-pointer">
                                     ${escapeHtml(participant.name)}
@@ -4551,7 +4654,7 @@
                                         type="button" 
                                         onclick="promptDeleteParticipant('${participant.id}', '${escapeHtml(participant.name).replace(/'/g, "\\'")}')" 
                                         title="Hapus peserta ini"
-                                        class="text-slate-400 hover:text-rose-600 font-extrabold text-[9px] px-0.5 rounded transition cursor-pointer shrink-0 no-print"
+                                        class="text-slate-400 hover:text-rose-600 font-extrabold text-[10px] px-1 rounded transition cursor-pointer shrink-0 no-print"
                                     >
                                         ✕
                                     </button>
@@ -4559,19 +4662,19 @@
                             </div>
                         </td>
                         ${cellsHtml}
-                        <td class="print-jmlh-col w-[30px] min-w-[30px] py-0.5 px-0.5 text-center font-bold text-blue-900 text-[8.5px] sm:text-[9px] border-r border-slate-200">
+                        <td class="print-jmlh-col w-[34px] min-w-[34px] py-1 px-0.5 text-center font-bold text-blue-900 text-[10px] sm:text-[11px] border-r border-slate-200">
                             ${rowCheckedCount}
                         </td>
-                        <td class="print-rate-col w-[52px] min-w-[52px] py-0.5 px-1 text-right font-medium text-slate-700 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-200">
+                        <td class="print-rate-col w-[58px] min-w-[58px] py-1 px-1 text-right font-medium text-slate-700 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(activeRate)}
                         </td>
-                        <td class="print-total-col w-[58px] min-w-[58px] py-0.5 px-1 text-right font-bold text-emerald-800 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-200">
+                        <td class="print-total-col w-[64px] min-w-[64px] py-1 px-1 text-right font-bold text-emerald-800 text-[10px] sm:text-[11px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(rowTotalAmount)}
                         </td>
-                        <td class="print-ttd-col w-[52px] min-w-[52px] py-0.5 px-0.5 text-center border-r border-slate-200">
+                        <td class="print-ttd-col w-[56px] min-w-[56px] py-1 px-0.5 text-center border-r border-slate-200">
                             ${ttdContent}
                         </td>
-                        <td class="w-[64px] min-w-[64px] py-0.5 px-0.5">
+                        <td class="w-[72px] min-w-[72px] py-1 px-1">
                             <input 
                                 type="text" 
                                 inputmode="text"
@@ -4579,7 +4682,7 @@
                                 placeholder="..."
                                 title="${participant.updatedBy ? `Terakhir diubah oleh ${escapeHtml(participant.updatedBy)}${participant.updatedAt ? ' (' + new Date(participant.updatedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ')' : ''}` : 'Keterangan'}"
                                 onblur="handleSaveKet('${participant.id}', this)"
-                                class="w-full min-w-[58px] bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-blue-500 rounded px-0.5 py-0 text-[8.5px] text-slate-800 focus:outline-none"
+                                class="w-full min-w-[64px] bg-transparent hover:bg-white focus:bg-white border border-transparent focus:border-blue-500 rounded px-1 py-0.5 text-[10px] sm:text-[11px] text-slate-800 focus:outline-none"
                             >
                         </td>
                     </tr>
@@ -4592,8 +4695,8 @@
 
             let rekapHtml = `
                 <tr>
-                    <td class="w-[20px] min-w-[20px] max-w-[20px] bg-slate-200 py-1 px-0 text-center text-[8px] border-r border-slate-300">-</td>
-                    <td class="w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-slate-200 py-1 px-1 text-left font-bold text-slate-900 uppercase text-[8px] sm:text-[9px] truncate border-r border-slate-300">
+                    <td class="w-[24px] min-w-[24px] max-w-[24px] bg-slate-200 py-1.5 px-0 text-center text-[9px] border-r border-slate-300">-</td>
+                    <td class="w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-slate-200 py-1.5 px-1.5 text-left font-bold text-slate-900 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-slate-300">
                         ${summaryRowLabel}
                     </td>
             `;
@@ -4602,8 +4705,8 @@
             if (!isAllowanceTab) {
                 ordersRowHtml = `
                     <tr class="bg-amber-50/90">
-                        <td class="w-[20px] min-w-[20px] max-w-[20px] bg-amber-100 py-1 px-0 text-center text-[8px] border-r border-amber-200">-</td>
-                        <td class="w-[92px] min-w-[92px] max-w-[115px] sm:w-[125px] sm:min-w-[125px] sm:max-w-[155px] bg-amber-100 py-1 px-1 text-left font-extrabold text-amber-950 uppercase text-[8px] sm:text-[9px] truncate border-r border-amber-200">
+                        <td class="w-[24px] min-w-[24px] max-w-[24px] bg-amber-100 py-1.5 px-0 text-center text-[9px] border-r border-amber-200">-</td>
+                        <td class="w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-amber-100 py-1.5 px-1.5 text-left font-extrabold text-amber-950 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-amber-200">
                             PESANAN HARIAN
                         </td>
                 `;
@@ -4615,7 +4718,7 @@
                     totalOrdersSum += parseOrderCellValue(rawOrderVal);
 
                     ordersRowHtml += `
-                        <td colspan="2" class="py-0.5 px-0 text-center border-r border-amber-200">
+                        <td colspan="2" class="py-1 px-0.5 text-center border-r border-amber-200">
                             <input 
                                 id="dailyOrderInput_${col.key}"
                                 type="text" 
@@ -4626,24 +4729,24 @@
                                 onfocus="handleDailyOrderFocus('${col.key}')"
                                 oninput="handleDailyOrderChange('${col.key}', this)"
                                 onblur="handleDailyOrderBlur('${col.key}', this)"
-                                class="w-full min-w-[28px] bg-white border border-amber-300 rounded px-0.5 py-0.5 text-center text-[8px] sm:text-[9px] font-bold text-amber-950 focus:outline-none focus:border-amber-600"
+                                class="w-full min-w-[36px] bg-white border border-amber-300 rounded px-1 py-0.5 text-center text-[9.5px] sm:text-[10.5px] font-bold text-amber-950 focus:outline-none focus:border-amber-600"
                             >
                         </td>
                     `;
                 });
 
                 ordersRowHtml += `
-                    <td id="dailyOrdersJmlhCell" class="print-jmlh-col py-0.5 px-0.5 text-center font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] border-r border-amber-300">
+                    <td id="dailyOrdersJmlhCell" class="print-jmlh-col py-1 px-0.5 text-center font-extrabold text-amber-950 bg-amber-200 text-[10px] sm:text-[11px] border-r border-amber-300">
                         ${totalOrdersSum}
                     </td>
-                    <td class="print-rate-col py-0.5 px-1 text-right font-bold text-amber-950 bg-amber-100 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-amber-200">
+                    <td class="print-rate-col py-1 px-1 text-right font-bold text-amber-950 bg-amber-100 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-amber-200">
                         ${formatRupiah(activeRate)}
                     </td>
-                    <td id="dailyOrdersTotalRpCell" class="print-total-col py-0.5 px-1 text-right font-extrabold text-amber-950 bg-amber-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-amber-300">
+                    <td id="dailyOrdersTotalRpCell" class="print-total-col py-1 px-1 text-right font-extrabold text-amber-950 bg-amber-200 text-[10px] sm:text-[11px] whitespace-nowrap border-r border-amber-300">
                         ${formatRupiah(totalOrdersSum * activeRate)}
                     </td>
-                    <td class="print-ttd-col py-0.5 px-0.5 bg-amber-100 border-r border-amber-200"></td>
-                    <td class="py-0.5 px-0.5 bg-amber-100"></td>
+                    <td class="print-ttd-col py-1 px-0.5 bg-amber-100 border-r border-amber-200"></td>
+                    <td class="py-1 px-0.5 bg-amber-100"></td>
                 </tr>
                 `;
             }
@@ -4651,10 +4754,10 @@
             if (!isAllowanceTab) {
                 DAY_COLUMNS.forEach(col => {
                     rekapHtml += `
-                        <td class="print-slot-col py-0.5 px-0 text-center font-bold text-emerald-800 text-[8px] sm:text-[9px] border-r border-slate-300">
+                        <td class="print-slot-col py-1 px-0 text-center font-bold text-emerald-800 text-[9.5px] sm:text-[10.5px] border-r border-slate-300">
                             ${slotTotals[col.slot1]}
                         </td>
-                        <td class="print-slot-col py-0.5 px-0 text-center font-bold text-sky-800 text-[8px] sm:text-[9px] border-r border-slate-300">
+                        <td class="print-slot-col py-1 px-0 text-center font-bold text-sky-800 text-[9.5px] sm:text-[10.5px] border-r border-slate-300">
                             ${slotTotals[col.slot2]}
                         </td>
                     `;
@@ -4662,17 +4765,17 @@
             }
 
             rekapHtml += `
-                <td class="print-jmlh-col py-0.5 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[8.5px] sm:text-[9px] border-r border-slate-300">
+                <td class="print-jmlh-col py-1 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[10px] sm:text-[11px] border-r border-slate-300">
                     ${isAllowanceTab ? participantsData.reduce((sum, p) => sum + getParticipantAllowanceDayCount(p.checks), 0) : grandTotalChecks}
                 </td>
-                <td class="print-rate-col py-0.5 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[8px] sm:text-[8.5px] whitespace-nowrap border-r border-slate-300">
+                <td class="print-rate-col py-1 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(activeRate)}
                 </td>
-                <td class="print-total-col py-0.5 px-1 text-right font-extrabold text-emerald-950 bg-emerald-200 text-[8.5px] sm:text-[9px] whitespace-nowrap border-r border-slate-300">
+                <td class="print-total-col py-1 px-1 text-right font-extrabold text-emerald-950 bg-emerald-200 text-[10px] sm:text-[11px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(grandTotalAmount)}
                 </td>
-                <td class="print-ttd-col py-0.5 px-0.5 bg-slate-200 border-r border-slate-300"></td>
-                <td class="py-0.5 px-0.5 bg-slate-200"></td>
+                <td class="print-ttd-col py-1 px-0.5 bg-slate-200 border-r border-slate-300"></td>
+                <td class="py-1 px-0.5 bg-slate-200"></td>
             </tr>
             `;
 
@@ -4696,79 +4799,6 @@
         syncPeriodInputsUI();
         updateRoleView();
         initAuthAndRealtime();
-
-        let deferredInstallPrompt = null;
-        const btnInstallAppFromDrawer = document.getElementById('btnInstallAppFromDrawer');
-        const installAppStatusBadge = document.getElementById('installAppStatusBadge');
-
-        function isAppAlreadyInstalled() {
-            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-        }
-
-        function updateInstallButtonUI() {
-            if (!btnInstallAppFromDrawer || !installAppStatusBadge) return;
-            if (isAppAlreadyInstalled()) {
-                installAppStatusBadge.textContent = 'Terinstal';
-                btnInstallAppFromDrawer.classList.remove('bg-cyan-600', 'hover:bg-cyan-700');
-                btnInstallAppFromDrawer.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-            } else if (deferredInstallPrompt) {
-                installAppStatusBadge.textContent = 'Siap';
-            } else {
-                installAppStatusBadge.textContent = 'PWA';
-            }
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredInstallPrompt = e;
-            updateInstallButtonUI();
-        });
-
-        window.addEventListener('appinstalled', () => {
-            deferredInstallPrompt = null;
-            updateInstallButtonUI();
-            showToast("Aplikasi berhasil diinstal ke perangkat");
-        });
-
-        if (btnInstallAppFromDrawer) {
-            btnInstallAppFromDrawer.addEventListener('click', async () => {
-                closeNavDrawer();
-
-                if (isAppAlreadyInstalled()) {
-                    showToast("Aplikasi sudah terinstal di perangkat ini");
-                    return;
-                }
-
-                if (deferredInstallPrompt) {
-                    try {
-                        deferredInstallPrompt.prompt();
-                        const choiceResult = await deferredInstallPrompt.userChoice;
-                        if (choiceResult && choiceResult.outcome === 'accepted') {
-                            showToast("Memulai proses instalasi aplikasi...");
-                        }
-                        deferredInstallPrompt = null;
-                        updateInstallButtonUI();
-                    } catch (_) {
-                        showToast("Gagal membuka dialog instalasi", true);
-                    }
-                    return;
-                }
-
-                const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-                openConfirmPopup({
-                    title: 'Install Aplikasi ke Layar Utama',
-                    message: isIos
-                        ? 'Ketuk tombol Bagikan (Share) di browser Safari Anda, lalu pilih "Tambahkan ke Layar Utama" (Add to Home Screen).'
-                        : 'Buka menu titik tiga (⋮) di pojok kanan atas browser Anda, lalu pilih "Install aplikasi" atau "Tambahkan ke layar utama".',
-                    detail: 'Aplikasi akan berjalan dalam mode layar penuh seperti aplikasi asli.',
-                    confirmText: 'Mengerti',
-                    confirmClass: 'bg-cyan-600 hover:bg-cyan-700 text-white',
-                    onConfirm: () => {}
-                });
-            });
-        }
-
-        updateInstallButtonUI();
 
         try {
             const manifestObj = {
@@ -4814,4 +4844,4 @@
         } catch (_) {}
     </script>
 </body>
-    </html>
+                    </html>
