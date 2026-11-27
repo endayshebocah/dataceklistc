@@ -427,7 +427,8 @@
             #checklistTable tfoot tr:last-child td {
                 border-bottom: 1.5px solid #0f172a !important;
             }
-            #checklistTable input[type="text"] {
+            #checklistTable input[type="text"],
+            #checklistTable input[type="number"] {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 !important;
@@ -1571,16 +1572,6 @@
             return obj;
         }
 
-        function getParticipantAllowanceDayCount(checksObj) {
-            if (!checksObj || typeof checksObj !== 'object') return 0;
-            return DAY_COLUMNS.reduce((acc, col) => {
-                if (col.key === 'd7') return acc;
-                const hasMorning = !!checksObj[col.slot1];
-                const hasEvening = !!checksObj[col.slot2];
-                return acc + ((hasMorning || hasEvening) ? 1 : 0);
-            }, 0);
-        }
-
         function getCurrentWeekDates(baseStartIso = '') {
             let referenceDate = new Date();
             if (baseStartIso && typeof baseStartIso === 'string') {
@@ -2153,6 +2144,7 @@
                         id,
                         name: (data.name || '').toUpperCase(),
                         checks,
+                        allowanceDays: typeof data.allowanceDays === 'number' ? data.allowanceDays : 0,
                         ket: data.ket || '',
                         ttdDataUrl: data.ttdDataUrl || '',
                         createdAt: data.createdAt || 0,
@@ -2870,13 +2862,13 @@
                 return;
             }
 
-            const count = getParticipantAllowanceDayCount(target.checks);
+            const count = Number(target.allowanceDays || 0);
             const totalRp = count * ALLOWANCE_UNIT_RATE;
 
             const box = document.getElementById('portalAllowanceResult');
             document.getElementById('allowanceParticipantName').textContent = target.name;
             document.getElementById('allowanceDetailText').textContent =
-                `Jumlah hari aktif: ${count} × ${formatRupiah(ALLOWANCE_UNIT_RATE)} = ${formatRupiah(totalRp)}`;
+                `Jumlah hari uang jajan: ${count} × ${formatRupiah(ALLOWANCE_UNIT_RATE)} = ${formatRupiah(totalRp)}`;
             box.classList.remove('hidden');
         });
 
@@ -3096,12 +3088,12 @@
             renderTable([]);
 
             const totalAllowanceDaysAll = participantsData.reduce((sum, p) => {
-                return sum + getParticipantAllowanceDayCount(p.checks);
+                return sum + Number(p.allowanceDays || 0);
             }, 0);
 
             openConfirmPopup({
                 title: 'Rekap Uang Jajan (Rp 15.000 / Hari)',
-                message: 'Ringkasan perhitungan uang jajan seluruh peserta berdasarkan hari ceklis aktif (pagi/sore dalam 1 hari dihitung 1):',
+                message: 'Ringkasan perhitungan uang jajan seluruh peserta berdasarkan data Fingerprint / input pada kolom JMLH:',
                 detail: `${participantsData.length} Peserta • ${totalAllowanceDaysAll} Hari • Total ${formatRupiah(totalAllowanceDaysAll * ALLOWANCE_UNIT_RATE)}`,
                 confirmText: 'Tutup Ringkasan',
                 confirmClass: 'bg-indigo-600 hover:bg-indigo-700 text-white',
@@ -3252,7 +3244,7 @@
                     return [v1 ? 'YA' : 'TIDAK', v2 ? 'YA' : 'TIDAK'];
                 });
                 const effectiveCount = activeAdminSubTab === 'UANG_JAJAN'
-                    ? getParticipantAllowanceDayCount(p.checks)
+                    ? Number(p.allowanceDays || 0)
                     : count;
                 return [
                     idx + 1,
@@ -3310,10 +3302,10 @@
             fingerprintFileInput.click();
         });
 
-        function extractFingerprintNamesFromRows(rows2D) {
+        function extractFingerprintRecordsFromRows(rows2D) {
             if (!Array.isArray(rows2D) || rows2D.length === 0) return [];
             const extracted = [];
-            const seenInFile = new Set();
+            const seenInFile = new Map();
 
             // Kolom K adalah indeks kolom ke-10 (A=0 ... K=10)
             const COL_K_INDEX = 10;
@@ -3333,22 +3325,25 @@
                 }
 
                 // Cek baris di bawah baris nama (misal Baris 11 Samsul -> Baris 12 berisi jam absen)
+                // Setiap kolom yang terisi jam absen pada baris ke-12 dihitung 1
                 const nextRow = rows2D[r + 1] || [];
-                let hasAttendanceTime = false;
+                let filledAttendanceCols = 0;
                 for (let c = 0; c < nextRow.length; c++) {
                     const cellVal = nextRow[c];
                     if (cellVal !== undefined && cellVal !== null && String(cellVal).trim() !== '') {
-                        hasAttendanceTime = true;
-                        break;
+                        filledAttendanceCols++;
                     }
                 }
 
-                // Jika baris jam absen di bawahnya kosong, lewati namanya
-                if (!hasAttendanceTime) continue;
+                // Jika baris jam absen di bawahnya kosong (seperti baris 6, 8, 10, 16, 18), lewati namanya
+                if (filledAttendanceCols === 0) continue;
 
                 if (!seenInFile.has(cleanedName)) {
-                    seenInFile.add(cleanedName);
-                    extracted.push(cleanedName);
+                    const item = { name: cleanedName, allowanceDays: filledAttendanceCols };
+                    seenInFile.set(cleanedName, item);
+                    extracted.push(item);
+                } else {
+                    seenInFile.get(cleanedName).allowanceDays += filledAttendanceCols;
                 }
             }
 
@@ -3365,12 +3360,18 @@
                 if (typeof XLSX !== 'undefined') {
                     const buffer = await file.arrayBuffer();
                     const workbook = XLSX.read(buffer, { type: 'array' });
-                    // Prioritaskan sheet "Lap. Log Absen"
+                    // Cari persis sheet "Lap. Log Absen"
                     const preferredSheetName = workbook.SheetNames.find(
                         name => name.trim().toLowerCase() === 'lap. log absen'
                     ) || workbook.SheetNames.find(
-                        name => name.toLowerCase().includes('log absen') || name.toLowerCase().includes('absen')
-                    ) || workbook.SheetNames[0];
+                        name => name.toLowerCase().includes('lap. log absen') || name.toLowerCase().includes('log absen')
+                    );
+
+                    if (!preferredSheetName) {
+                        showToast('Sheet "Lap. Log Absen" tidak ditemukan di file Excel', true);
+                        return;
+                    }
+
                     const worksheet = workbook.Sheets[preferredSheetName];
                     targetRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
                 } else {
@@ -3378,25 +3379,21 @@
                     targetRows = text.split(/\r?\n/).map(line => line.split(/[,;\t]/));
                 }
 
-                const validNames = extractFingerprintNamesFromRows(targetRows);
-                if (validNames.length === 0) {
-                    showToast("Tidak ditemukan nama dengan jam absen terisi pada sheet Lap. Log Absen (Kolom K)", true);
+                const validRecords = extractFingerprintRecordsFromRows(targetRows);
+                if (validRecords.length === 0) {
+                    showToast('Tidak ditemukan nama dengan jam absen terisi pada sheet "Lap. Log Absen"', true);
                     return;
                 }
 
-                const existingSet = new Set(participantsData.map(p => p.name));
-                const newNamesToAdd = validNames.filter(name => !existingSet.has(name));
-
-                if (newNamesToAdd.length === 0) {
-                    showToast(`Semua ${validNames.length} peserta aktif Fingerprint sudah ada di tabel`);
-                    return;
-                }
+                const existingMap = new Map(participantsData.map(p => [p.name, p]));
+                const newCount = validRecords.filter(rec => !existingMap.has(rec.name)).length;
+                const updateCount = validRecords.length - newCount;
 
                 openConfirmPopup({
                     title: 'Konfirmasi Tarik Data PingerPrint',
-                    message: `Ditemukan ${validNames.length} peserta dengan jam absen terisi di Kolom K (${newNamesToAdd.length} nama baru). Tambahkan ke daftar peserta?`,
-                    detail: newNamesToAdd.slice(0, 8).join(', ') + (newNamesToAdd.length > 8 ? ` ... (+${newNamesToAdd.length - 8} lainnya)` : ''),
-                    confirmText: `Ya, Tarik (${newNamesToAdd.length})`,
+                    message: `Ditemukan ${validRecords.length} peserta aktif dari sheet "Lap. Log Absen" (${newCount} baru, ${updateCount} diperbarui). Hitungan kolom jam absen baris ke-12 akan masuk ke kolom JMLH Uang Jajan.`,
+                    detail: validRecords.slice(0, 6).map(r => `${r.name} (${r.allowanceDays})`).join(', ') + (validRecords.length > 6 ? ` ... (+${validRecords.length - 6} lainnya)` : ''),
+                    confirmText: `Ya, Tarik (${validRecords.length})`,
                     confirmClass: 'bg-cyan-700 hover:bg-cyan-800 text-white',
                     onConfirm: async () => {
                         if (!currentUser) {
@@ -3407,26 +3404,38 @@
                         setConnectionStatus('SYNCING');
                         try {
                             const baseTime = Date.now();
-                            await commitChunkedOperations(newNamesToAdd, (batch, name, idx) => {
-                                const deterministicId = makeDeterministicParticipantId(name);
-                                const ref = getParticipantDocRef(deterministicId);
-                                batch.set(ref, {
-                                    name,
-                                    checks: getEmptyChecksObject(),
-                                    ket: '',
-                                    ttdDataUrl: '',
-                                    createdAt: baseTime + idx,
-                                    createdBy: currentUser.uid,
-                                    updatedBy: getCurrentActorLabel()
-                                }, { merge: true });
+                            await commitChunkedOperations(validRecords, (batch, rec, idx) => {
+                                const existing = existingMap.get(rec.name);
+                                if (existing) {
+                                    existing.allowanceDays = rec.allowanceDays;
+                                    batch.update(getParticipantDocRef(existing.id), {
+                                        allowanceDays: rec.allowanceDays,
+                                        updatedAt: baseTime + idx,
+                                        updatedBy: getCurrentActorLabel()
+                                    });
+                                } else {
+                                    const deterministicId = makeDeterministicParticipantId(rec.name);
+                                    const ref = getParticipantDocRef(deterministicId);
+                                    batch.set(ref, {
+                                        name: rec.name,
+                                        checks: getEmptyChecksObject(),
+                                        allowanceDays: rec.allowanceDays,
+                                        ket: '',
+                                        ttdDataUrl: '',
+                                        createdAt: baseTime + idx,
+                                        createdBy: currentUser.uid,
+                                        updatedBy: getCurrentActorLabel()
+                                    }, { merge: true });
+                                }
                             });
                             await setDoc(getMetaDocRef(), {
                                 clearedAfterArchive: false,
                                 updatedAt: Date.now(),
                                 updatedBy: getCurrentActorLabel()
                             }, { merge: true });
+                            renderTable([]);
                             setConnectionStatus('ONLINE');
-                            showToast(`${newNamesToAdd.length} nama dari Fingerprint berhasil ditarik`);
+                            showToast(`${validRecords.length} data Fingerprint & jumlah Uang Jajan berhasil ditarik`);
                         } catch (_) {
                             setConnectionStatus('OFFLINE');
                             showToast("Gagal menyimpan data dari Fingerprint", true);
@@ -3599,6 +3608,7 @@
                         id: docSnap.id,
                         name: (data.name || '').toUpperCase(),
                         checks: data.checks || {},
+                        allowanceDays: typeof data.allowanceDays === 'number' ? data.allowanceDays : 0,
                         ket: data.ket || '',
                         ttdDataUrl: data.ttdDataUrl || '',
                         createdAt: data.createdAt || 0,
@@ -3634,6 +3644,7 @@
                     no: idx + 1,
                     name: p.name,
                     count,
+                    allowanceDays: Number(p.allowanceDays || 0),
                     rate: activeRate,
                     total: count * activeRate,
                     ket: p.ket || '',
@@ -3705,6 +3716,7 @@
                         no: idx + 1,
                         name: p.name,
                         count,
+                        allowanceDays: Number(p.allowanceDays || 0),
                         rate: CATERING_UNIT_RATE,
                         total: count * CATERING_UNIT_RATE,
                         ket: p.ket || '',
@@ -3854,6 +3866,7 @@
                     id: r.id || `archive_row_${arc.id}_${i}`,
                     name: (r.name || `PESERTA ${i + 1}`).toUpperCase(),
                     checks: checksObj,
+                    allowanceDays: typeof r.allowanceDays === 'number' ? r.allowanceDays : 0,
                     ket: r.ket || '',
                     ttdDataUrl: r.ttdDataUrl || '',
                     createdAt: r.createdAt || (Date.now() + i)
@@ -3926,6 +3939,7 @@
                             batch.set(ref, {
                                 name: resolvedName,
                                 checks: checksObj,
+                                allowanceDays: typeof r.allowanceDays === 'number' ? r.allowanceDays : 0,
                                 ket: r.ket || '',
                                 ttdDataUrl: r.ttdDataUrl || '',
                                 createdAt: baseTime + idx,
@@ -4263,6 +4277,28 @@
             } catch (_) {}
         };
 
+        window.handleSaveAllowanceDays = async function(participantId, inputEl) {
+            if (isViewingArchiveMode && isArchiveReadOnly) return;
+            const parsed = Math.max(0, parseInt(inputEl.value, 10) || 0);
+            inputEl.value = parsed;
+            const target = participantsData.find(p => p.id === participantId);
+            if (target) target.allowanceDays = parsed;
+            renderTable([]);
+            if (!currentUser || isViewingArchiveMode) return;
+            setConnectionStatus('SYNCING');
+            try {
+                await updateDoc(getParticipantDocRef(participantId), {
+                    allowanceDays: parsed,
+                    updatedAt: Date.now(),
+                    updatedBy: getCurrentActorLabel()
+                });
+                setConnectionStatus('ONLINE');
+            } catch (_) {
+                setConnectionStatus('OFFLINE');
+                showToast("Gagal menyimpan jumlah hari uang jajan", true);
+            }
+        };
+
         window.handleDailyOrderChange = function(dayKey, inputEl) {
             if (isViewingArchiveMode && isArchiveReadOnly) return;
             dailyOrdersData[dayKey] = inputEl.value;
@@ -4400,6 +4436,7 @@
                     batch.set(ref, {
                         name,
                         checks: getEmptyChecksObject(),
+                        allowanceDays: 0,
                         ket: '',
                         ttdDataUrl: '',
                         createdAt: baseTime + idx,
@@ -4457,6 +4494,56 @@
                 setConnectionStatus('OFFLINE');
                 showToast("Gagal menghapus peserta", true);
             }
+        });
+
+        document.getElementById('btnDeleteAllActiveRows').addEventListener('click', () => {
+            closeNavDrawer();
+            if (isViewingArchiveMode && isArchiveReadOnly) {
+                showToast("Arsip dibuka dalam mode Lihat Saja (Read-Only)", true);
+                return;
+            }
+            if (participantsData.length === 0) {
+                showToast("Belum ada baris peserta yang tersimpan", true);
+                return;
+            }
+
+            openConfirmPopup({
+                title: 'Hapus Semua Baris Peserta?',
+                message: 'Semua nama peserta beserta ceklis, TTD, dan keterangan pada periode aktif akan dihapus permanen.',
+                detail: `Total yang akan dihapus: ${participantsData.length} Peserta`,
+                confirmText: 'Ya, Hapus Semua',
+                confirmClass: 'bg-rose-600 hover:bg-rose-700 text-white',
+                onConfirm: async () => {
+                    if (isViewingArchiveMode) {
+                        participantsData = [];
+                        statusMarksMap = {};
+                        renderTable([]);
+                        showToast("Semua baris pada arsip ini dihapus");
+                        return;
+                    }
+                    if (!currentUser) return;
+                    setConnectionStatus('SYNCING');
+                    try {
+                        await commitChunkedOperations(participantsData, (batch, p) => {
+                            batch.delete(getParticipantDocRef(p.id));
+                        });
+                        await setDoc(getMetaDocRef(), {
+                            statusMarks: {},
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
+                        }, { merge: true });
+                        previousChecksSnapshot = {};
+                        statusMarksMap = {};
+                        participantsData = [];
+                        renderTable([]);
+                        setConnectionStatus('ONLINE');
+                        showToast("Semua baris peserta berhasil dihapus");
+                    } catch (_) {
+                        setConnectionStatus('OFFLINE');
+                        showToast("Gagal menghapus semua baris peserta", true);
+                    }
+                }
+            });
         });
 
         const resetModal = document.getElementById('resetModal');
@@ -4619,7 +4706,7 @@
                 : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Resign, Lulus)" class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
 
             headerHtml += `
-                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[34px] min-w-[34px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[44px] min-w-[44px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     JMLH
                 </th>
                 <th rowspan="2" class="sticky-header print-rate-col bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-1 px-1 text-[9px] sm:text-[10px] text-right border-b border-r border-slate-300 whitespace-nowrap">
@@ -4715,7 +4802,7 @@
                 });
 
                 rowCheckedCount = isAllowanceTab
-                    ? getParticipantAllowanceDayCount(participant.checks)
+                    ? Number(participant.allowanceDays || 0)
                     : DAY_COLUMNS.reduce((c, col) => c + (participant.checks?.[col.slot1] ? 1 : 0) + (participant.checks?.[col.slot2] ? 1 : 0), 0);
 
                 const rowTotalAmount = rowCheckedCount * activeRate;
@@ -4724,6 +4811,28 @@
                 const ttdContent = participant.ttdDataUrl
                     ? `<img src="${participant.ttdDataUrl}" alt="TTD ${escapeHtml(participant.name)}" onclick="openTtdPreview('${escapeHtml(participant.name).replace(/'/g, "\\'")}', '${participant.ttdDataUrl}')" class="h-4.5 w-auto max-w-[50px] mx-auto object-contain cursor-pointer">`
                     : `<span class="text-[9px] text-slate-400">${idx + 1}. ...</span>`;
+
+                const jmlhCellHtml = isAllowanceTab
+                    ? `
+                        <td class="print-jmlh-col w-[44px] min-w-[44px] py-1 px-0.5 text-center border-r border-slate-200">
+                            <input 
+                                type="number" 
+                                min="0" 
+                                step="1"
+                                inputmode="numeric"
+                                value="${rowCheckedCount}"
+                                ${isViewingArchiveMode && isArchiveReadOnly ? 'disabled' : ''}
+                                onblur="handleSaveAllowanceDays('${participant.id}', this)"
+                                onkeydown="if(event.key==='Enter'){this.blur();}"
+                                class="w-full text-center font-bold text-blue-900 bg-blue-50/60 hover:bg-white focus:bg-white border border-blue-200 focus:border-blue-600 rounded px-0.5 py-0.5 text-[10px] sm:text-[11px] focus:outline-none"
+                            >
+                        </td>
+                    `
+                    : `
+                        <td class="print-jmlh-col w-[34px] min-w-[34px] py-1 px-0.5 text-center font-bold text-blue-900 text-[10px] sm:text-[11px] border-r border-slate-200">
+                            ${rowCheckedCount}
+                        </td>
+                    `;
 
                 bodyHtml += `
                     <tr class="${rowBg} hover:bg-amber-50/60 transition-colors">
@@ -4748,9 +4857,7 @@
                             </div>
                         </td>
                         ${cellsHtml}
-                        <td class="print-jmlh-col w-[34px] min-w-[34px] py-1 px-0.5 text-center font-bold text-blue-900 text-[10px] sm:text-[11px] border-r border-slate-200">
-                            ${rowCheckedCount}
-                        </td>
+                        ${jmlhCellHtml}
                         <td class="print-rate-col w-[58px] min-w-[58px] py-1 px-1 text-right font-medium text-slate-700 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(activeRate)}
                         </td>
@@ -4852,7 +4959,7 @@
 
             rekapHtml += `
                 <td class="print-jmlh-col py-1 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[10px] sm:text-[11px] border-r border-slate-300">
-                    ${isAllowanceTab ? participantsData.reduce((sum, p) => sum + getParticipantAllowanceDayCount(p.checks), 0) : grandTotalChecks}
+                    ${isAllowanceTab ? filteredParticipants.reduce((sum, p) => sum + Number(p.allowanceDays || 0), 0) : grandTotalChecks}
                 </td>
                 <td class="print-rate-col py-1 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(activeRate)}
