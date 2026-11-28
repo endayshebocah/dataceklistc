@@ -868,23 +868,23 @@
                     <!-- Pembatas Garis Vertikal Halus -->
                     <span class="w-px h-5 bg-slate-200 shrink-0"></span>
 
-                    <!-- Legenda Warna Status Harian di Samping Kanan Tombol Catering & Uang Jajan -->
+                    <!-- Tombol Indikator Warna Status Harian (Langsung Membuka Input Status) -->
                     <div id="statusColorLegend" class="flex items-center flex-nowrap overflow-x-auto gap-1 text-[9px] sm:text-[10px] font-bold text-slate-600">
-                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                        <button type="button" data-legend-status="IZIN" class="btn-legend-status inline-flex items-center gap-1 bg-slate-50 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 active:scale-95 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap transition cursor-pointer" title="Klik untuk input status IZIN">
                             <span class="w-2 h-2 rounded-full bg-teal-500"></span>Izin
-                        </span>
-                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                        </button>
+                        <button type="button" data-legend-status="SAKIT" class="btn-legend-status inline-flex items-center gap-1 bg-slate-50 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 active:scale-95 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap transition cursor-pointer" title="Klik untuk input status SAKIT">
                             <span class="w-2 h-2 rounded-full bg-amber-500"></span>Sakit
-                        </span>
-                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                        </button>
+                        <button type="button" data-legend-status="ALFA" class="btn-legend-status inline-flex items-center gap-1 bg-slate-50 hover:bg-rose-50 hover:text-rose-800 hover:border-rose-300 active:scale-95 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap transition cursor-pointer" title="Klik untuk input status ALFA">
                             <span class="w-2 h-2 rounded-full bg-rose-500"></span>Alfa
-                        </span>
-                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                        </button>
+                        <button type="button" data-legend-status="RESIGN" class="btn-legend-status inline-flex items-center gap-1 bg-slate-50 hover:bg-purple-50 hover:text-purple-800 hover:border-purple-300 active:scale-95 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap transition cursor-pointer" title="Klik untuk input status RESIGN">
                             <span class="w-2 h-2 rounded-full bg-purple-500"></span>Resign
-                        </span>
-                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                        </button>
+                        <button type="button" data-legend-status="LULUS" class="btn-legend-status inline-flex items-center gap-1 bg-slate-50 hover:bg-blue-50 hover:text-blue-800 hover:border-blue-300 active:scale-95 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap transition cursor-pointer" title="Klik untuk input status LULUS">
                             <span class="w-2 h-2 rounded-full bg-blue-600"></span>Lulus
-                        </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -962,6 +962,11 @@
                 <button type="button" id="btnDrawerOpenLocation" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
                     <span>📍 Lokasi TC</span>
                     <span id="drawerActiveLocationBadge" class="text-[10px] bg-cyan-900/80 px-2 py-0.5 rounded">TC Pusat Jakarta</span>
+                </button>
+
+                <button type="button" id="btnDrawerQuickCheckDays" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
+                    <span>📅 Ceklis Hari</span>
+                    <span class="text-[10px] bg-sky-800/80 px-1.5 py-0.5 rounded">P &amp; S</span>
                 </button>
 
                 <button type="button" id="btnOpenAdminModal" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
@@ -1454,10 +1459,6 @@
                 </button>
             </div>
             <div class="space-y-2">
-                <button type="button" id="btnOpenQuickCheckDaysModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold uppercase bg-sky-600 hover:bg-sky-700 text-white transition cursor-pointer flex items-center justify-between">
-                    <span>CEKLIS HARI</span>
-                    <span class="text-[10px] bg-sky-800/80 px-1.5 py-0.5 rounded">P &amp; S</span>
-                </button>
                 <button type="button" data-status-category="IZIN" class="btn-select-status-category w-full py-2.5 px-3 rounded-lg text-xs font-extrabold uppercase bg-teal-600 hover:bg-teal-700 text-white transition cursor-pointer">
                     IZIN
                 </button>
@@ -2596,16 +2597,6 @@
             }
         };
 
-        window.openQuickActionMenu = function() {
-            if (activeAdminSubTab === 'UANG_JAJAN') {
-                showToast("Menu Aksi Cepat tidak tersedia di tab Uang Jajan");
-                return;
-            }
-            quickActionMenuModal.classList.remove('hidden');
-            quickActionMenuModal.classList.add('flex');
-            lucide.createIcons();
-        };
-
         function closeQuickActionMenu() {
             quickActionMenuModal.classList.add('hidden');
             quickActionMenuModal.classList.remove('flex');
@@ -2699,6 +2690,17 @@
         document.querySelectorAll('.btn-select-status-category').forEach(btn => {
             btn.addEventListener('click', () => {
                 const cat = btn.getAttribute('data-status-category');
+                openStatusInputModal(cat);
+            });
+        });
+
+        document.querySelectorAll('.btn-legend-status').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isViewingArchiveMode && isArchiveReadOnly) {
+                    showToast("Arsip dibuka dalam mode Lihat Saja (Read-Only)", true);
+                    return;
+                }
+                const cat = btn.getAttribute('data-legend-status');
                 openStatusInputModal(cat);
             });
         });
@@ -2865,6 +2867,7 @@
             updateQuickCheckNoUrutPreview();
             renderQuickCheckDayButtons();
 
+            closeNavDrawer();
             closeQuickActionMenu();
             quickCheckDaysModal.classList.remove('hidden');
             quickCheckDaysModal.classList.add('flex');
@@ -2876,7 +2879,8 @@
             quickCheckDaysModal.classList.remove('flex');
         }
 
-        document.getElementById('btnOpenQuickCheckDaysModal').addEventListener('click', openQuickCheckDaysModal);
+        document.getElementById('btnDrawerQuickCheckDays')?.addEventListener('click', openQuickCheckDaysModal);
+        document.getElementById('btnOpenQuickCheckDaysModal')?.addEventListener('click', openQuickCheckDaysModal);
         document.getElementById('btnCloseQuickCheckDaysModal').addEventListener('click', closeQuickCheckDaysModal);
         document.getElementById('btnCancelQuickCheckDays').addEventListener('click', closeQuickCheckDaysModal);
 
@@ -4981,19 +4985,6 @@
                 });
             }
 
-            const ketHeaderContent = isAllowanceTab
-                ? `<span>KET</span>`
-                : `
-                    <span class="inline-flex items-center gap-1 underline decoration-slate-600 underline-offset-2">
-                        <span>KET</span>
-                        <span class="text-[7.5px] px-1 py-0.5 rounded bg-slate-200 text-slate-800 font-extrabold no-print">MENU</span>
-                    </span>
-                `;
-
-            const ketHeaderAttrs = isAllowanceTab
-                ? `class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300"`
-                : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Resign, Lulus)" class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
-
             headerHtml += `
                 <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[34px] min-w-[34px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     JMLH
@@ -5007,8 +4998,8 @@
                 <th rowspan="2" class="sticky-header print-ttd-col bg-slate-100 text-slate-700 w-[56px] min-w-[56px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     TTD
                 </th>
-                <th rowspan="2" ${ketHeaderAttrs}>
-                    ${ketHeaderContent}
+                <th rowspan="2" class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300">
+                    <span>KET</span>
                 </th>
             `;
             headerRow.innerHTML = headerHtml;
@@ -5334,4 +5325,4 @@
         } catch (_) {}
     </script>
 </body>
-                                    </html>
+                </html>
