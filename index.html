@@ -48,6 +48,50 @@
             color: #0f172a;
         }
 
+        /* Sticky Footer Logic untuk Rekap Harian & Pesanan Harian */
+        .sticky-footer-row-1 {
+            position: sticky;
+            bottom: 30px;
+            z-index: 25;
+            background-color: #e2e8f0;
+            box-shadow: 0 -2px 5px -1px rgba(0, 0, 0, 0.12);
+        }
+
+        .sticky-footer-row-1 td {
+            position: sticky;
+            bottom: 30px;
+            background-color: #e2e8f0;
+        }
+
+        .sticky-footer-row-2 {
+            position: sticky;
+            bottom: 0;
+            z-index: 25;
+            background-color: #fef3c7;
+            box-shadow: 0 -2px 5px -1px rgba(0, 0, 0, 0.12);
+        }
+
+        .sticky-footer-row-2 td {
+            position: sticky;
+            bottom: 0;
+            background-color: #fef3c7;
+        }
+
+        .sticky-footer-col-no {
+            position: sticky !important;
+            left: 0;
+            z-index: 30;
+            background-color: inherit;
+        }
+
+        .sticky-footer-col-name {
+            position: sticky !important;
+            left: 24px;
+            z-index: 30;
+            background-color: inherit;
+            box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.15);
+        }
+
         .sticky-col-no {
             position: sticky;
             left: 0;
@@ -181,14 +225,14 @@
         }
 
         .status-marked-lulus .custom-checkbox {
-            border-color: #16a34a;
+            border-color: #2563eb;
         }
         .status-marked-lulus .custom-checkbox:not(:checked)::before {
             content: "";
             width: 7px;
             height: 7px;
             border-radius: 9999px;
-            background-color: #10b981;
+            background-color: #2563eb;
         }
 
         /* Indikator titik bulat kecil di pojok kotak checkbox apabila kotak juga tercentang */
@@ -212,7 +256,7 @@
         .status-marked-alfa .custom-checkbox:checked::before { background-color: #f43f5e; }
         .status-marked-cuti .custom-checkbox:checked::before { background-color: #6366f1; }
         .status-marked-resign .custom-checkbox:checked::before { background-color: #a855f7; }
-        .status-marked-lulus .custom-checkbox:checked::before { background-color: #10b981; }
+        .status-marked-lulus .custom-checkbox:checked::before { background-color: #2563eb; }
 
         .custom-checkbox:checked::after {
             content: "";
@@ -306,6 +350,10 @@
             }
             .no-print {
                 display: none !important;
+            }
+            .sticky-footer-row-1, .sticky-footer-row-2 {
+                position: static !important;
+                box-shadow: none !important;
             }
             html, body {
                 background-color: #ffffff !important;
@@ -427,8 +475,7 @@
             #checklistTable tfoot tr:last-child td {
                 border-bottom: 1.5px solid #0f172a !important;
             }
-            #checklistTable input[type="text"],
-            #checklistTable input[type="number"] {
+            #checklistTable input[type="text"] {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 !important;
@@ -562,6 +609,20 @@
     <!-- ===================================================================== -->
     <div id="portalLandingScreen" class="min-h-screen w-full bg-black text-white flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-[#161e2e] border border-slate-800/90 rounded-xl p-4 sm:p-5 shadow-2xl">
+            <!-- Pemilih Lokasi TC pada Portal Awal -->
+            <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-800">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOKASI TC:</span>
+                <button
+                    type="button"
+                    id="btnPortalLocationSelect"
+                    class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-cyan-500/50 text-cyan-300 font-extrabold text-[11px] px-2.5 py-1 rounded-lg transition cursor-pointer"
+                >
+                    <span>📍</span>
+                    <span id="portalActiveLocationLabel">TC Pusat Jakarta</span>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+
             <form id="portalSearchForm">
                 <div class="flex items-center justify-between mb-1.5">
                     <label for="portalNameInput" class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider">
@@ -687,7 +748,7 @@
 
             <!-- Toolbar Atas dengan Tata Letak Rapi & Segmented Control -->
             <div class="mb-2 flex flex-col sm:flex-row sm:items-stretch justify-between bg-white border border-slate-300 rounded-lg px-2 py-1.5 shadow-2xs no-print gap-2">
-                <!-- Wadah Pembungkus Tombol Utama & Indikator Terhubung -->
+                <!-- Wadah Pembungkus Tombol Utama, Lokasi TC & Indikator Terhubung -->
                 <div class="flex items-center gap-1.5 flex-nowrap overflow-x-auto bg-slate-50 border border-slate-300 rounded-lg p-1 shadow-inner min-w-0">
                     <button 
                         type="button" 
@@ -698,23 +759,16 @@
                         <span>Tambah Peserta</span>
                     </button>
 
-                    <!-- Segmented Control Mode Tabel -->
-                    <div class="inline-flex items-center bg-white border border-slate-300 p-0.5 rounded-md shrink-0 h-7">
-                        <button 
-                            type="button" 
-                            id="btnTabCatering"
-                            class="px-2.5 py-1 rounded text-[10px] font-extrabold bg-slate-900 text-white shadow-2xs transition cursor-pointer leading-none whitespace-nowrap"
-                        >
-                            📋 Catering
-                        </button>
-                        <button 
-                            type="button" 
-                            id="btnSwitchToAllowance"
-                            class="px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none whitespace-nowrap"
-                        >
-                            💵 Uang Jajan
-                        </button>
-                    </div>
+                    <!-- Tombol Lokasi TC (Menampilkan Pilihan TC Pusat Jakarta & TC Panimbang) -->
+                    <button
+                        type="button"
+                        id="btnOpenLocationModal"
+                        class="btn-3d bg-cyan-700 hover:bg-cyan-800 text-white font-extrabold text-[10px] h-7 px-2.5 rounded-md inline-flex items-center justify-center gap-1 transition cursor-pointer leading-none shrink-0"
+                    >
+                        <span>📍</span>
+                        <span id="adminActiveLocationLabel">TC Pusat Jakarta</span>
+                        <i data-lucide="chevron-down" class="w-3 h-3 shrink-0"></i>
+                    </button>
 
                     <span id="connectionBadge" aria-label="Status Koneksi" title="Menghubungkan..." class="inline-flex items-center justify-center w-6 h-7 rounded-md bg-white border border-slate-200 shrink-0">
                         <span id="connectionDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
@@ -756,8 +810,8 @@
             <!-- Bar Judul, Periode & Legenda Warna Status -->
             <div class="mb-1.5 px-0.5 flex flex-col sm:flex-row sm:items-end justify-between gap-1.5">
                 <div>
-                    <h1 id="tableSectionTitle" class="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
-                        Rekapan Pembayaran Catering
+                    <h1 id="tableSectionTitle" class="hidden text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-900 leading-tight">
+                        Rekapan Pembayaran Catering — TC Pusat Jakarta
                     </h1>
                     <div class="mt-0.5 flex items-center gap-1.5 flex-wrap">
                         <button 
@@ -774,23 +828,64 @@
                     </div>
                 </div>
 
-                <!-- Legenda Warna Status Harian -->
-                <div id="statusColorLegend" class="flex items-center flex-wrap gap-1.5 text-[9px] sm:text-[10px] font-bold text-slate-600 no-print">
-                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
-                        <span class="w-2 h-2 rounded-full bg-teal-500"></span>Izin
-                    </span>
-                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
-                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>Sakit
-                    </span>
-                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
-                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>Alfa
-                    </span>
-                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
-                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>Resign
-                    </span>
-                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Lulus
-                    </span>
+                <!-- Wadah/Kolom Khusus Pembungkus Tombol Mode & Legenda Status Sejajar ke Samping -->
+                <div class="flex items-center flex-nowrap overflow-x-auto gap-2 bg-white border border-slate-300 rounded-xl p-1.5 shadow-2xs no-print">
+                    <!-- Dropdown Select Mode (Catering / Uang Jajan) -->
+                    <div class="relative shrink-0">
+                        <button 
+                            type="button" 
+                            id="btnModeDropdownToggle"
+                            class="px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-slate-900 text-white shadow-xs transition cursor-pointer leading-tight whitespace-nowrap inline-flex items-center gap-1.5"
+                        >
+                            <span id="activeModeLabel">📋 Catering</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-300 shrink-0"></i>
+                        </button>
+                        
+                        <!-- Menu Dropdown Popover -->
+                        <div 
+                            id="modeDropdownMenu" 
+                            class="hidden absolute left-0 top-full mt-1 z-30 min-w-[140px] bg-white border border-slate-200 rounded-lg shadow-xl p-1 space-y-0.5"
+                        >
+                            <button 
+                                type="button" 
+                                id="btnTabCatering"
+                                class="w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-900 hover:bg-slate-200 transition cursor-pointer flex items-center justify-between"
+                            >
+                                <span>📋 Catering</span>
+                                <span id="checkIconCatering" class="text-xs font-bold text-slate-900">✓</span>
+                            </button>
+                            <button 
+                                type="button" 
+                                id="btnSwitchToAllowance"
+                                class="w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer flex items-center justify-between"
+                            >
+                                <span>💵 Uang Jajan</span>
+                                <span id="checkIconAllowance" class="text-xs font-bold text-indigo-600 hidden">✓</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pembatas Garis Vertikal Halus -->
+                    <span class="w-px h-5 bg-slate-200 shrink-0"></span>
+
+                    <!-- Legenda Warna Status Harian di Samping Kanan Tombol Catering & Uang Jajan -->
+                    <div id="statusColorLegend" class="flex items-center flex-nowrap gap-1 text-[9px] sm:text-[10px] font-bold text-slate-600 shrink-0">
+                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-teal-500"></span>Izin
+                        </span>
+                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>Sakit
+                        </span>
+                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>Alfa
+                        </span>
+                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>Resign
+                        </span>
+                        <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded-md whitespace-nowrap">
+                            <span class="w-2 h-2 rounded-full bg-blue-600"></span>Lulus
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -827,7 +922,7 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot id="tableFooter" class="bg-slate-100 border-t border-slate-400 font-bold text-[10px] sm:text-[11px] text-slate-800 relative z-10"></tfoot>
+                    <tfoot id="tableFooter" class="bg-slate-100 border-t border-slate-400 font-bold text-[10px] sm:text-[11px] text-slate-800"></tfoot>
                 </table>
             </div>
         </main>
@@ -864,6 +959,11 @@
             </div>
 
             <div class="space-y-2">
+                <button type="button" id="btnDrawerOpenLocation" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
+                    <span>📍 Lokasi TC</span>
+                    <span id="drawerActiveLocationBadge" class="text-[10px] bg-cyan-900/80 px-2 py-0.5 rounded">TC Pusat Jakarta</span>
+                </button>
+
                 <button type="button" id="btnOpenAdminModal" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center justify-between">
                     <span>Menu Admin</span>
                     <span id="adminCountBadge" class="text-[10px] bg-indigo-800/80 px-1.5 py-0.5 rounded">1</span>
@@ -888,28 +988,9 @@
                     <span id="archiveMenuLabel">Arsip Rekapan (0)</span>
                 </button>
 
-                <button type="button" id="btnDrawerExportExcel" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer">
-                    Export Excel
-                </button>
-
-                <button type="button" id="btnDrawerImportCsv" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
-                    <span>📄</span>
-                    <span>Impor CSV</span>
-                </button>
-
                 <button type="button" id="btnDrawerPullFingerprint" class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
                     <span>🖐️</span>
                     <span>Tarik Data PingerPrint</span>
-                </button>
-
-                <button type="button" id="btnDrawerDownloadTemplate" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
-                    <span>⬇️</span>
-                    <span>Download Template CSV</span>
-                </button>
-
-                <button type="button" id="btnDeleteAllActiveRows" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg text-left transition cursor-pointer flex items-center gap-2">
-                    <span>🗑️</span>
-                    <span>Hapus Semua Baris Kolom</span>
                 </button>
             </div>
 
@@ -918,7 +999,6 @@
                 <span id="userIdBadge" class="block font-mono text-[10px] text-slate-700 break-all">ID: ...</span>
             </div>
 
-            <input type="file" id="csvFileInput" accept=".csv,.txt" class="hidden">
             <input type="file" id="fingerprintFileInput" accept=".xlsx,.xls,.csv" class="hidden">
         </div>
 
@@ -930,6 +1010,46 @@
     <!-- ===================================================================== -->
     <!-- MODAL-MODAL KONFIRMASI & FITUR                                        -->
     <!-- ===================================================================== -->
+
+    <!-- Modal Pilih Lokasi TC (TC Pusat Jakarta & TC Panimbang) -->
+    <div id="locationSelectModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/80 no-print">
+        <div class="bg-white border border-slate-200 rounded-xl max-w-sm w-full p-4 sm:p-5 shadow-2xl">
+            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-900 uppercase">Pilih Lokasi TC</h3>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Pilih lokasi untuk membuka data uang jajan &amp; ceklis nasi.</p>
+                </div>
+                <button type="button" id="btnCloseLocationModal" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="space-y-2.5">
+                <button
+                    type="button"
+                    data-tc-location="TC_PUSAT_JAKARTA"
+                    class="btn-choose-tc-location w-full p-3 rounded-xl border-2 text-left transition cursor-pointer flex items-center justify-between"
+                >
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900 uppercase">TC Pusat Jakarta</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Data Ceklis Nasi &amp; Uang Jajan Pusat Jakarta (Rp 15.000)</p>
+                    </div>
+                    <span class="tc-location-check text-xs font-extrabold text-cyan-700">✓ Aktif</span>
+                </button>
+
+                <button
+                    type="button"
+                    data-tc-location="TC_PANIMBANG"
+                    class="btn-choose-tc-location w-full p-3 rounded-xl border-2 text-left transition cursor-pointer flex items-center justify-between"
+                >
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900 uppercase">TC Panimbang</p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Data Ceklis Nasi &amp; Uang Jajan Panimbang (Rp 25.000)</p>
+                    </div>
+                    <span class="tc-location-check text-xs font-extrabold text-cyan-700 hidden">✓ Aktif</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="portalAdminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950">
         <div class="bg-[#161e2e] border border-slate-700 rounded-xl max-w-sm w-full p-4 shadow-2xl text-white">
@@ -1255,22 +1375,26 @@
     <div id="manageChecksModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75">
         <div class="bg-white border border-slate-300 rounded-xl max-w-xs w-full p-4 shadow-2xl">
             <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-200">
-                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Atur Ceklis</h3>
+                <h3 class="text-sm font-extrabold text-slate-900 uppercase">Atur Ceklis &amp; Baris</h3>
                 <button type="button" id="btnCloseManageChecksModal" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
             <p class="text-[11px] text-slate-600 mb-3">
-                Pilih tindakan ceklis untuk seluruh peserta pada periode aktif:
+                Pilih tindakan untuk seluruh peserta pada periode aktif:
             </p>
             <div class="space-y-2">
                 <button type="button" id="btnTriggerCheckAllFromModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white transition cursor-pointer flex items-center justify-center gap-1.5">
                     <span>☑️</span>
-                    <span>Ceklis Semua</span>
+                    <span>Ceklis Semua Kotak</span>
                 </button>
                 <button type="button" id="btnTriggerClearAllFromModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 transition cursor-pointer flex items-center justify-center gap-1.5">
                     <span>↺</span>
-                    <span>Hapus Ceklis</span>
+                    <span>Kosongkan Semua Centang</span>
+                </button>
+                <button type="button" id="btnTriggerDeleteAllRowsFromModal" class="w-full py-2.5 px-3 rounded-lg text-xs font-extrabold bg-red-600 hover:bg-red-700 text-white transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <span>🗑️</span>
+                    <span>Hapus Semua Baris Peserta</span>
                 </button>
             </div>
         </div>
@@ -1346,7 +1470,7 @@
                 <button type="button" data-status-category="RESIGN" class="btn-select-status-category w-full py-2.5 px-3 rounded-lg text-xs font-extrabold uppercase bg-purple-600 hover:bg-purple-700 text-white transition cursor-pointer">
                     RESIGN
                 </button>
-                <button type="button" data-status-category="LULUS" class="btn-select-status-category w-full py-2.5 px-3 rounded-lg text-xs font-extrabold uppercase bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer">
+                <button type="button" data-status-category="LULUS" class="btn-select-status-category w-full py-2.5 px-3 rounded-lg text-xs font-extrabold uppercase bg-blue-600 hover:bg-blue-700 text-white transition cursor-pointer">
                     LULUS
                 </button>
             </div>
@@ -1513,11 +1637,66 @@
         const db = getFirestore(app);
 
         const CATERING_UNIT_RATE = 13000;
-        const ALLOWANCE_UNIT_RATE = 15000;
         const DEFAULT_FALLBACK_PIN = '11111';
 
+        // Konfigurasi Lokasi TC (TC Pusat Jakarta & TC Panimbang)
+        const TC_LOCATIONS = {
+            TC_PUSAT_JAKARTA: {
+                key: 'TC_PUSAT_JAKARTA',
+                label: 'TC Pusat Jakarta',
+                allowanceRate: 15000
+            },
+            TC_PANIMBANG: {
+                key: 'TC_PANIMBANG',
+                label: 'TC Panimbang',
+                allowanceRate: 25000
+            }
+        };
+
+        let activeTcLocation = 'TC_PUSAT_JAKARTA';
+        try {
+            const savedLoc = localStorage.getItem(`ceklis_active_tc_location_${appId}`);
+            if (savedLoc && TC_LOCATIONS[savedLoc]) {
+                activeTcLocation = savedLoc;
+            }
+        } catch (_) {}
+
+        function getActiveLocationInfo() {
+            return TC_LOCATIONS[activeTcLocation] || TC_LOCATIONS.TC_PUSAT_JAKARTA;
+        }
+
         function getActiveUnitRate() {
-            return activeAdminSubTab === 'UANG_JAJAN' ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
+            if (activeAdminSubTab === 'UANG_JAJAN') {
+                return getActiveLocationInfo().allowanceRate;
+            }
+            return CATERING_UNIT_RATE;
+        }
+
+        function updateLocationBadgesUI() {
+            const locInfo = getActiveLocationInfo();
+            const portalLbl = document.getElementById('portalActiveLocationLabel');
+            const adminLbl = document.getElementById('adminActiveLocationLabel');
+            const drawerLbl = document.getElementById('drawerActiveLocationBadge');
+            if (portalLbl) portalLbl.textContent = locInfo.label;
+            if (adminLbl) adminLbl.textContent = locInfo.label;
+            if (drawerLbl) drawerLbl.textContent = locInfo.label;
+
+            document.querySelectorAll('.btn-choose-tc-location').forEach(btn => {
+                const btnLoc = btn.getAttribute('data-tc-location');
+                const checkBadge = btn.querySelector('.tc-location-check');
+                const isSelected = btnLoc === activeTcLocation;
+                if (isSelected) {
+                    btn.classList.add('border-cyan-600', 'bg-cyan-50/70');
+                    btn.classList.remove('border-slate-200', 'bg-white', 'hover:bg-slate-50');
+                    if (checkBadge) checkBadge.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('border-cyan-600', 'bg-cyan-50/70');
+                    btn.classList.add('border-slate-200', 'bg-white', 'hover:bg-slate-50');
+                    if (checkBadge) checkBadge.classList.add('hidden');
+                }
+            });
+
+            applyAdminSubTabMode();
         }
 
         let currentUser = null;
@@ -1544,9 +1723,12 @@
         let pendingCancelCallback = null;
         let boardTitle = 'CEKLIS HARIAN BERSAMA';
         let presenceInterval = null;
-        let hasSeededInitialData = false;
         let clearedAfterArchive = false;
         let isArchivingInProgress = false;
+
+        let unsubMetaListener = null;
+        let unsubParticipantsListener = null;
+        let unsubArchivesListener = null;
 
         let isAdminLoggedIn = false;
         let loggedInAdminName = 'ADMIN';
@@ -1570,6 +1752,19 @@
             const obj = {};
             ALL_SLOT_KEYS.forEach(k => { obj[k] = false; });
             return obj;
+        }
+
+        function getParticipantAllowanceDayCount(checksObj) {
+            if (!checksObj || typeof checksObj !== 'object') return 0;
+            if (typeof checksObj.fingerprintAllowanceCount === 'number' && checksObj.fingerprintAllowanceCount >= 0) {
+                return checksObj.fingerprintAllowanceCount;
+            }
+            return DAY_COLUMNS.reduce((acc, col) => {
+                if (col.key === 'd7') return acc;
+                const hasMorning = !!checksObj[col.slot1];
+                const hasEvening = !!checksObj[col.slot2];
+                return acc + ((hasMorning || hasEvening) ? 1 : 0);
+            }, 0);
         }
 
         function getCurrentWeekDates(baseStartIso = '') {
@@ -1655,21 +1850,7 @@
         }
 
         function updateFormattedDateBadges() {
-            const startFormattedEl = document.getElementById('periodStartFormatted');
-            const endFormattedEl = document.getElementById('periodEndFormatted');
             const sectionPeriodEl = document.getElementById('tableSectionPeriod');
-            if (startFormattedEl) {
-                const formattedStart = formatIndonesianShortDate(periodRange.start);
-                startFormattedEl.textContent = formattedStart || 'Pilih tgl';
-                startFormattedEl.classList.toggle('text-slate-400', !formattedStart);
-                startFormattedEl.classList.toggle('text-slate-800', !!formattedStart);
-            }
-            if (endFormattedEl) {
-                const formattedEnd = formatIndonesianShortDate(periodRange.end);
-                endFormattedEl.textContent = formattedEnd || 'Pilih tgl';
-                endFormattedEl.classList.toggle('text-slate-400', !formattedEnd);
-                endFormattedEl.classList.toggle('text-slate-800', !!formattedEnd);
-            }
             if (sectionPeriodEl) {
                 sectionPeriodEl.textContent = `Periode : ${formatPeriodLabel(periodRange.start, periodRange.end)}`;
             }
@@ -1754,15 +1935,107 @@
             }, 0);
         }
 
-        const getParticipantsColRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'checklist_participants');
-        const getParticipantDocRef = (docId) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_participants', docId);
-        const getMetaDocRef = () => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_meta', 'config');
+        // Referensi Firestore dipisah otomatis per Lokasi TC
+        const getParticipantsColRef = () => activeTcLocation === 'TC_PUSAT_JAKARTA'
+            ? collection(db, 'artifacts', appId, 'public', 'data', 'checklist_participants')
+            : collection(db, 'artifacts', appId, 'public', 'data', `checklist_participants_${activeTcLocation.toLowerCase()}`);
+
+        const getParticipantDocRef = (docId) => activeTcLocation === 'TC_PUSAT_JAKARTA'
+            ? doc(db, 'artifacts', appId, 'public', 'data', 'checklist_participants', docId)
+            : doc(db, 'artifacts', appId, 'public', 'data', `checklist_participants_${activeTcLocation.toLowerCase()}`, docId);
+
+        const getMetaDocRef = () => activeTcLocation === 'TC_PUSAT_JAKARTA'
+            ? doc(db, 'artifacts', appId, 'public', 'data', 'checklist_meta', 'config')
+            : doc(db, 'artifacts', appId, 'public', 'data', 'checklist_meta', `config_${activeTcLocation.toLowerCase()}`);
+
         const getPresenceColRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'checklist_presence');
         const getPresenceDocRef = (uid) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_presence', uid);
         const getAdminsColRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'checklist_admins');
         const getAdminDocRef = (adminId) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_admins', adminId);
-        const getArchivesColRef = () => collection(db, 'artifacts', appId, 'public', 'data', 'checklist_archives');
-        const getArchiveDocRef = (archiveId) => doc(db, 'artifacts', appId, 'public', 'data', 'checklist_archives', archiveId);
+
+        const getArchivesColRef = () => activeTcLocation === 'TC_PUSAT_JAKARTA'
+            ? collection(db, 'artifacts', appId, 'public', 'data', 'checklist_archives')
+            : collection(db, 'artifacts', appId, 'public', 'data', `checklist_archives_${activeTcLocation.toLowerCase()}`);
+
+        const getArchiveDocRef = (archiveId) => activeTcLocation === 'TC_PUSAT_JAKARTA'
+            ? doc(db, 'artifacts', appId, 'public', 'data', 'checklist_archives', archiveId)
+            : doc(db, 'artifacts', appId, 'public', 'data', `checklist_archives_${activeTcLocation.toLowerCase()}`, archiveId);
+
+        // =====================================================================
+        // MODAL PEMILIH LOKASI TC (TC PUSAT JAKARTA & TC PANIMBANG)
+        // =====================================================================
+        const locationSelectModal = document.getElementById('locationSelectModal');
+
+        function openLocationSelectModal() {
+            closeNavDrawer();
+            updateLocationBadgesUI();
+            locationSelectModal.classList.remove('hidden');
+            locationSelectModal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeLocationSelectModal() {
+            locationSelectModal.classList.add('hidden');
+            locationSelectModal.classList.remove('flex');
+        }
+
+        document.getElementById('btnOpenLocationModal')?.addEventListener('click', openLocationSelectModal);
+        document.getElementById('btnPortalLocationSelect')?.addEventListener('click', openLocationSelectModal);
+        document.getElementById('btnDrawerOpenLocation')?.addEventListener('click', openLocationSelectModal);
+        document.getElementById('btnCloseLocationModal')?.addEventListener('click', closeLocationSelectModal);
+        locationSelectModal?.addEventListener('click', (e) => {
+            if (e.target === locationSelectModal) closeLocationSelectModal();
+        });
+
+        async function switchTcLocation(nextLocationKey) {
+            if (!TC_LOCATIONS[nextLocationKey]) return;
+            closeLocationSelectModal();
+
+            if (activeTcLocation === nextLocationKey) {
+                showToast(`Sudah berada di ${TC_LOCATIONS[nextLocationKey].label}`);
+                return;
+            }
+
+            activeTcLocation = nextLocationKey;
+            try {
+                localStorage.setItem(`ceklis_active_tc_location_${appId}`, activeTcLocation);
+            } catch (_) {}
+
+            isViewingArchiveMode = false;
+            activeArchiveId = null;
+            isArchiveReadOnly = false;
+            previousChecksSnapshot = {};
+            participantsData = [];
+            dailyOrdersData = {};
+            statusMarksMap = {};
+            periodRange = { start: '', end: '' };
+            portalSelectedParticipant = null;
+            document.getElementById('portalParticipantCard')?.classList.add('hidden');
+            document.getElementById('portalAllowanceResult')?.classList.add('hidden');
+
+            updateLocationBadgesUI();
+            updateSaveArchiveButtonLabel();
+            syncPeriodInputsUI();
+            if (isAdminLoggedIn) {
+                renderTable([]);
+            }
+
+            if (currentUser) {
+                setConnectionStatus('SYNCING');
+                subscribeToBoardMeta();
+                subscribeToParticipants();
+                subscribeToArchives();
+            }
+
+            showToast(`Membuka data ${getActiveLocationInfo().label}`);
+        }
+
+        document.querySelectorAll('.btn-choose-tc-location').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetLoc = btn.getAttribute('data-tc-location');
+                switchTcLocation(targetLoc);
+            });
+        });
 
         function makeDeterministicParticipantId(name) {
             const normalized = String(name || '')
@@ -2071,7 +2344,10 @@
 
         function subscribeToBoardMeta() {
             if (!currentUser) return;
-            onSnapshot(getMetaDocRef(), (docSnap) => {
+            if (typeof unsubMetaListener === 'function') {
+                unsubMetaListener();
+            }
+            unsubMetaListener = onSnapshot(getMetaDocRef(), (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.title) boardTitle = data.title;
@@ -2085,12 +2361,16 @@
                             if (!activeDailyOrderKey) {
                                 renderTable([]);
                             }
+                        } else {
+                            dailyOrdersData = {};
                         }
                         if (data.statusMarks && typeof data.statusMarks === 'object') {
                             statusMarksMap = data.statusMarks;
                             if (!activeDailyOrderKey) {
                                 renderTable([]);
                             }
+                        } else {
+                            statusMarksMap = {};
                         }
                         if (data.periodRange && typeof data.periodRange === 'object') {
                             periodRange = {
@@ -2098,16 +2378,27 @@
                                 end: data.periodRange.end || ''
                             };
                             syncPeriodInputsUI();
+                        } else {
+                            periodRange = { start: '', end: '' };
+                            syncPeriodInputsUI();
                         }
                     }
+                } else if (!isViewingArchiveMode) {
+                    dailyOrdersData = {};
+                    statusMarksMap = {};
+                    periodRange = { start: '', end: '' };
+                    syncPeriodInputsUI();
                 }
             });
         }
 
         function subscribeToParticipants() {
             if (!currentUser) return;
+            if (typeof unsubParticipantsListener === 'function') {
+                unsubParticipantsListener();
+            }
 
-            onSnapshot(getParticipantsColRef(), async (snapshot) => {
+            unsubParticipantsListener = onSnapshot(getParticipantsColRef(), async (snapshot) => {
                 setConnectionStatus('ONLINE');
 
                 if (snapshot.empty) {
@@ -2144,7 +2435,6 @@
                         id,
                         name: (data.name || '').toUpperCase(),
                         checks,
-                        allowanceDays: typeof data.allowanceDays === 'number' ? data.allowanceDays : 0,
                         ket: data.ket || '',
                         ttdDataUrl: data.ttdDataUrl || '',
                         createdAt: data.createdAt || 0,
@@ -2203,13 +2493,13 @@
 
         function saveArchivesLocalBackup(list) {
             try {
-                localStorage.setItem(`ceklis_archives_backup_${appId}`, JSON.stringify(list || []));
+                localStorage.setItem(`ceklis_archives_backup_${appId}_${activeTcLocation}`, JSON.stringify(list || []));
             } catch (_) {}
         }
 
         function loadArchivesLocalBackup() {
             try {
-                const raw = localStorage.getItem(`ceklis_archives_backup_${appId}`);
+                const raw = localStorage.getItem(`ceklis_archives_backup_${appId}_${activeTcLocation}`);
                 if (!raw) return [];
                 const parsed = JSON.parse(raw);
                 return Array.isArray(parsed) ? parsed : [];
@@ -2220,7 +2510,10 @@
 
         function subscribeToArchives() {
             if (!currentUser) return;
-            onSnapshot(getArchivesColRef(), (snapshot) => {
+            if (typeof unsubArchivesListener === 'function') {
+                unsubArchivesListener();
+            }
+            unsubArchivesListener = onSnapshot(getArchivesColRef(), (snapshot) => {
                 const list = [];
                 snapshot.forEach(docSnap => {
                     const d = docSnap.data();
@@ -2295,10 +2588,10 @@
                 cellClass: 'status-marked-resign'
             },
             LULUS: {
-                activeBtn: 'bg-emerald-600 text-white border-emerald-700',
+                activeBtn: 'bg-blue-600 text-white border-blue-700',
                 inactiveBtn: 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-300',
-                submitBtn: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-                titleColor: 'text-emerald-700',
+                submitBtn: 'bg-blue-600 hover:bg-blue-700 text-white',
+                titleColor: 'text-blue-600',
                 cellClass: 'status-marked-lulus'
             }
         };
@@ -2708,7 +3001,7 @@
                 || participantsData.find(p => p.name.includes(query));
 
             if (!matched) {
-                showToast(`Nama "${query}" belum terdaftar`, true);
+                showToast(`Nama "${query}" belum terdaftar di ${getActiveLocationInfo().label}`, true);
                 return;
             }
 
@@ -2862,13 +3155,15 @@
                 return;
             }
 
-            const count = Number(target.allowanceDays || 0);
-            const totalRp = count * ALLOWANCE_UNIT_RATE;
+            const currentLocInfo = getActiveLocationInfo();
+            const currentAllowanceRate = currentLocInfo.allowanceRate;
+            const count = getParticipantAllowanceDayCount(target.checks);
+            const totalRp = count * currentAllowanceRate;
 
             const box = document.getElementById('portalAllowanceResult');
-            document.getElementById('allowanceParticipantName').textContent = target.name;
+            document.getElementById('allowanceParticipantName').textContent = `${target.name} (${currentLocInfo.label})`;
             document.getElementById('allowanceDetailText').textContent =
-                `Jumlah hari uang jajan: ${count} × ${formatRupiah(ALLOWANCE_UNIT_RATE)} = ${formatRupiah(totalRp)}`;
+                `Jumlah hari aktif: ${count} × ${formatRupiah(currentAllowanceRate)} = ${formatRupiah(totalRp)}`;
             box.classList.remove('hidden');
         });
 
@@ -2996,23 +3291,26 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
 
-        document.getElementById('btnOpenPortalAdminLogin').addEventListener('click', () => {
-            loginAdminNameInput.value = '';
-            loginAdminPinInput.value = '';
-            portalLoginErrorMsg.classList.add('hidden');
-            portalLoginModal.classList.remove('hidden');
-            portalLoginModal.classList.add('flex');
-            loginAdminNameInput.focus();
-        });
+        const btnOpenPortalAdminLogin = document.getElementById('btnOpenPortalAdminLogin');
+        if (btnOpenPortalAdminLogin) {
+            btnOpenPortalAdminLogin.addEventListener('click', () => {
+                loginAdminNameInput.value = '';
+                loginAdminPinInput.value = '';
+                portalLoginErrorMsg.classList.add('hidden');
+                portalLoginModal.classList.remove('hidden');
+                portalLoginModal.classList.add('flex');
+                loginAdminNameInput.focus();
+            });
+        }
 
         const closePortalLoginModal = () => {
             portalLoginModal.classList.add('hidden');
             portalLoginModal.classList.remove('flex');
         };
-        document.getElementById('btnClosePortalAdminLogin').addEventListener('click', closePortalLoginModal);
-        document.getElementById('btnCancelPortalAdminLogin').addEventListener('click', closePortalLoginModal);
+        document.getElementById('btnClosePortalAdminLogin')?.addEventListener('click', closePortalLoginModal);
+        document.getElementById('btnCancelPortalAdminLogin')?.addEventListener('click', closePortalLoginModal);
 
-        document.getElementById('portalAdminLoginForm').addEventListener('submit', (e) => {
+        document.getElementById('portalAdminLoginForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
             const enteredName = loginAdminNameInput.value.trim().toUpperCase();
             const enteredPin = loginAdminPinInput.value.trim();
@@ -3043,63 +3341,137 @@
         });
 
         function applyAdminSubTabMode() {
+            const btnToggle = document.getElementById('btnModeDropdownToggle');
+            const activeLabel = document.getElementById('activeModeLabel');
             const btnCatering = document.getElementById('btnTabCatering');
             const btnAllowance = document.getElementById('btnSwitchToAllowance');
+            const checkCatering = document.getElementById('checkIconCatering');
+            const checkAllowance = document.getElementById('checkIconAllowance');
+            const btnToolbarCatering = document.getElementById('btnToolbarCatering');
+            const btnToolbarAllowance = document.getElementById('btnToolbarAllowance');
             const legendEl = document.getElementById('statusColorLegend');
             const sectionTitleEl = document.getElementById('tableSectionTitle');
             const tableEl = document.getElementById('checklistTable');
+            const locInfo = getActiveLocationInfo();
 
             if (activeAdminSubTab === 'UANG_JAJAN') {
+                if (btnToggle) {
+                    btnToggle.className = 'px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-indigo-600 text-white shadow-xs transition cursor-pointer leading-tight whitespace-nowrap inline-flex items-center gap-1.5';
+                }
+                if (activeLabel) activeLabel.textContent = '💵 Uang Jajan';
+                
                 if (btnCatering) {
-                    btnCatering.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none';
+                    btnCatering.className = 'w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer flex items-center justify-between';
                 }
                 if (btnAllowance) {
-                    btnAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-indigo-600 text-white shadow-2xs transition cursor-pointer leading-none';
+                    btnAllowance.className = 'w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-extrabold bg-indigo-50 text-indigo-700 transition cursor-pointer flex items-center justify-between';
+                }
+                if (checkCatering) checkCatering.classList.add('hidden');
+                if (checkAllowance) checkAllowance.classList.remove('hidden');
+
+                if (btnToolbarCatering) {
+                    btnToolbarCatering.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none whitespace-nowrap';
+                }
+                if (btnToolbarAllowance) {
+                    btnToolbarAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-indigo-600 text-white shadow-2xs transition cursor-pointer leading-none whitespace-nowrap';
                 }
                 if (legendEl) legendEl.classList.add('hidden');
-                if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Uang Jajan';
+                if (sectionTitleEl) {
+                    sectionTitleEl.textContent = `Rekapan Uang Jajan — ${locInfo.label} (${formatRupiah(locInfo.allowanceRate)}/hari)`;
+                    sectionTitleEl.classList.add('hidden');
+                }
                 if (tableEl) tableEl.classList.add('allowance-print-table');
             } else {
+                if (btnToggle) {
+                    btnToggle.className = 'px-2.5 py-1 rounded-md text-[10px] font-extrabold bg-slate-900 text-white shadow-xs transition cursor-pointer leading-tight whitespace-nowrap inline-flex items-center gap-1.5';
+                }
+                if (activeLabel) activeLabel.textContent = '📋 Catering';
+
                 if (btnCatering) {
-                    btnCatering.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-slate-900 text-white shadow-2xs transition cursor-pointer leading-none';
+                    btnCatering.className = 'w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-900 transition cursor-pointer flex items-center justify-between';
                 }
                 if (btnAllowance) {
-                    btnAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none';
+                    btnAllowance.className = 'w-full text-left px-2.5 py-1.5 rounded-md text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer flex items-center justify-between';
+                }
+                if (checkCatering) checkCatering.classList.remove('hidden');
+                if (checkAllowance) checkAllowance.classList.add('hidden');
+
+                if (btnToolbarCatering) {
+                    btnToolbarCatering.className = 'px-2.5 py-1 rounded text-[10px] font-extrabold bg-slate-900 text-white shadow-2xs transition cursor-pointer leading-none whitespace-nowrap';
+                }
+                if (btnToolbarAllowance) {
+                    btnToolbarAllowance.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer leading-none whitespace-nowrap';
                 }
                 if (legendEl) legendEl.classList.remove('hidden');
-                if (sectionTitleEl) sectionTitleEl.textContent = 'Rekapan Pembayaran Catering';
+                if (sectionTitleEl) {
+                    sectionTitleEl.textContent = `Rekapan Pembayaran Catering — ${locInfo.label}`;
+                    sectionTitleEl.classList.add('hidden');
+                }
                 if (tableEl) tableEl.classList.remove('allowance-print-table');
             }
         }
 
-        document.getElementById('btnTabCatering').addEventListener('click', () => {
+        function toggleModeDropdownMenu() {
+            const menu = document.getElementById('modeDropdownMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function closeModeDropdownMenu() {
+            const menu = document.getElementById('modeDropdownMenu');
+            if (menu) menu.classList.add('hidden');
+        }
+
+        document.getElementById('btnModeDropdownToggle')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleModeDropdownMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('modeDropdownMenu');
+            const toggleBtn = document.getElementById('btnModeDropdownToggle');
+            if (dropdown && !dropdown.contains(e.target) && !toggleBtn?.contains(e.target)) {
+                closeModeDropdownMenu();
+            }
+        });
+
+        function handleSelectCateringTab() {
+            closeModeDropdownMenu();
             if (activeAdminSubTab === 'CEKLIS') return;
             activeAdminSubTab = 'CEKLIS';
             applyAdminSubTabMode();
             renderTable([]);
             showToast("Menampilkan Rekapan Catering");
-        });
+        }
 
-        document.getElementById('btnSwitchToAllowance').addEventListener('click', () => {
+        function handleSelectAllowanceTab() {
+            closeModeDropdownMenu();
             if (activeAdminSubTab === 'UANG_JAJAN') return;
 
             activeAdminSubTab = 'UANG_JAJAN';
             applyAdminSubTabMode();
             renderTable([]);
 
+            const locInfo = getActiveLocationInfo();
+            const currentAllowanceRate = locInfo.allowanceRate;
+
             const totalAllowanceDaysAll = participantsData.reduce((sum, p) => {
-                return sum + Number(p.allowanceDays || 0);
+                return sum + getParticipantAllowanceDayCount(p.checks);
             }, 0);
 
             openConfirmPopup({
-                title: 'Rekap Uang Jajan (Rp 15.000 / Hari)',
-                message: 'Ringkasan perhitungan uang jajan seluruh peserta berdasarkan data Fingerprint / input pada kolom JMLH:',
-                detail: `${participantsData.length} Peserta • ${totalAllowanceDaysAll} Hari • Total ${formatRupiah(totalAllowanceDaysAll * ALLOWANCE_UNIT_RATE)}`,
+                title: `Rekap Uang Jajan — ${locInfo.label}`,
+                message: `Ringkasan perhitungan uang jajan seluruh peserta berdasarkan hari ceklis aktif / tarikan Fingerprint (${formatRupiah(currentAllowanceRate)} / hari):`,
+                detail: `${participantsData.length} Peserta • ${totalAllowanceDaysAll} Hari • Total ${formatRupiah(totalAllowanceDaysAll * currentAllowanceRate)}`,
                 confirmText: 'Tutup Ringkasan',
                 confirmClass: 'bg-indigo-600 hover:bg-indigo-700 text-white',
                 onConfirm: () => {}
             });
-        });
+        }
+
+        document.getElementById('btnTabCatering')?.addEventListener('click', handleSelectCateringTab);
+        document.getElementById('btnSwitchToAllowance')?.addEventListener('click', handleSelectAllowanceTab);
+        document.getElementById('btnToolbarCatering')?.addEventListener('click', handleSelectCateringTab);
+        document.getElementById('btnToolbarAllowance')?.addEventListener('click', handleSelectAllowanceTab);
 
         // =====================================================================
         // PANEL LACI MENU NAVIGASI SAMPING (☰)
@@ -3158,13 +3530,13 @@
             manageChecksModal.classList.add('hidden');
             manageChecksModal.classList.remove('flex');
         }
-        document.getElementById('btnOpenManageChecksModal').addEventListener('click', openManageChecksModal);
-        document.getElementById('btnCloseManageChecksModal').addEventListener('click', closeManageChecksModal);
-        manageChecksModal.addEventListener('click', (e) => {
+        document.getElementById('btnOpenManageChecksModal')?.addEventListener('click', openManageChecksModal);
+        document.getElementById('btnCloseManageChecksModal')?.addEventListener('click', closeManageChecksModal);
+        manageChecksModal?.addEventListener('click', (e) => {
             if (e.target === manageChecksModal) closeManageChecksModal();
         });
 
-        document.getElementById('btnTriggerCheckAllFromModal').addEventListener('click', () => {
+        document.getElementById('btnTriggerCheckAllFromModal')?.addEventListener('click', () => {
             closeManageChecksModal();
             if (!currentUser || participantsData.length === 0) return;
 
@@ -3197,6 +3569,59 @@
             });
         });
 
+        document.getElementById('btnTriggerClearAllFromModal')?.addEventListener('click', () => {
+            closeManageChecksModal();
+            if (participantsData.length === 0) {
+                showToast("Belum ada data peserta untuk di-reset", true);
+                return;
+            }
+            resetModal.classList.remove('hidden');
+            resetModal.classList.add('flex');
+        });
+
+        document.getElementById('btnTriggerDeleteAllRowsFromModal')?.addEventListener('click', () => {
+            closeManageChecksModal();
+            if (participantsData.length === 0) {
+                showToast("Belum ada baris peserta untuk dihapus", true);
+                return;
+            }
+
+            openConfirmPopup({
+                title: 'Hapus Semua Baris Peserta?',
+                message: 'Apakah Anda yakin ingin menghapus seluruh baris nama peserta pada lokasi ini secara permanen?',
+                detail: `Total Peserta: ${participantsData.length} orang`,
+                confirmText: 'Ya, Hapus Semua Baris',
+                confirmClass: 'bg-red-600 hover:bg-red-700 text-white',
+                onConfirm: async () => {
+                    if (!currentUser) return;
+                    setConnectionStatus('SYNCING');
+                    try {
+                        await commitChunkedOperations(participantsData, (batch, p) => {
+                            batch.delete(getParticipantDocRef(p.id));
+                        });
+
+                        previousChecksSnapshot = {};
+                        participantsData = [];
+                        statusMarksMap = {};
+                        portalSelectedParticipant = null;
+                        renderTable([]);
+
+                        await setDoc(getMetaDocRef(), {
+                            statusMarks: {},
+                            updatedAt: Date.now(),
+                            updatedBy: getCurrentActorLabel()
+                        }, { merge: true });
+
+                        setConnectionStatus('ONLINE');
+                        showToast("Seluruh baris peserta berhasil dihapus");
+                    } catch (_) {
+                        setConnectionStatus('OFFLINE');
+                        showToast("Gagal menghapus seluruh baris peserta", true);
+                    }
+                }
+            });
+        });
+
         document.getElementById('btnTriggerClearAllFromModal').addEventListener('click', () => {
             closeManageChecksModal();
             if (participantsData.length === 0) {
@@ -3212,10 +3637,11 @@
             const titleEl = document.getElementById('printDocTitle');
             const periodEl = document.getElementById('printDocPeriod');
             const dateEl = document.getElementById('printDocDate');
+            const locLabel = getActiveLocationInfo().label.toUpperCase();
             if (titleEl) {
                 titleEl.textContent = activeAdminSubTab === 'UANG_JAJAN'
-                    ? 'REKAPAN UANG JAJAN PESERTA'
-                    : 'REKAPAN CEKLIS HARIAN PESERTA';
+                    ? `REKAPAN UANG JAJAN PESERTA — ${locLabel}`
+                    : `REKAPAN CEKLIS HARIAN PESERTA — ${locLabel}`;
             }
             if (periodEl) {
                 periodEl.textContent = `Periode: ${formatPeriodLabel(periodRange.start, periodRange.end)}`;
@@ -3226,72 +3652,9 @@
             setTimeout(() => window.print(), 150);
         });
 
-        function exportTableToCsv() {
-            const activeRate = getActiveUnitRate();
-            const rateLabel = activeRate.toLocaleString('id-ID');
-            const dayHeaders = DAY_COLUMNS.flatMap((c, i) => [
-                `${c.full} PAGI (${WEEK_DATES[i].dateLabel})`,
-                `${c.full} SORE (${WEEK_DATES[i].dateLabel})`
-            ]);
-            const headers = ['NO', 'NAMA PESERTA', ...dayHeaders, 'JMLH', `RP ${rateLabel}`, 'TOTAL', 'TTD', 'KET'];
-            const rows = participantsData.map((p, idx) => {
-                let count = 0;
-                const dayCells = DAY_COLUMNS.flatMap(col => {
-                    const v1 = !!(p.checks && p.checks[col.slot1]);
-                    const v2 = !!(p.checks && p.checks[col.slot2]);
-                    if (v1) count++;
-                    if (v2) count++;
-                    return [v1 ? 'YA' : 'TIDAK', v2 ? 'YA' : 'TIDAK'];
-                });
-                const effectiveCount = activeAdminSubTab === 'UANG_JAJAN'
-                    ? Number(p.allowanceDays || 0)
-                    : count;
-                return [
-                    idx + 1,
-                    `"${p.name.replace(/"/g, '""')}"`,
-                    ...dayCells,
-                    effectiveCount,
-                    activeRate,
-                    effectiveCount * activeRate,
-                    p.ttdDataUrl ? 'SUDAH TTD' : 'BELUM TTD',
-                    `"${(p.ket || '').replace(/"/g, '""')}"`
-                ].join(',');
-            });
-
-            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Rekapan_Ceklis_${new Date().toISOString().slice(0, 10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("File Excel / CSV berhasil diunduh");
-        }
-
-        document.getElementById('btnDrawerExportExcel').addEventListener('click', () => {
-            closeNavDrawer();
-            exportTableToCsv();
-        });
-
-        document.getElementById('btnDrawerDownloadTemplate').addEventListener('click', () => {
-            closeNavDrawer();
-            const sampleCsv = "data:text/csv;charset=utf-8," + ["NAMA PESERTA", "BUDI SANTOSO", "SITI AMINAH"].join('\n');
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(sampleCsv));
-            link.setAttribute("download", "Template_Peserta.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("Template CSV berhasil diunduh");
-        });
-
-        const csvFileInput = document.getElementById('csvFileInput');
-        document.getElementById('btnDrawerImportCsv').addEventListener('click', () => {
-            closeNavDrawer();
-            csvFileInput.click();
-        });
-
+        // =====================================================================
+        // TARIK DATA FINGERPRINT (SHEET "Lap. Log Absen", KOLOM K & BARIS JAM ABSEN)
+        // =====================================================================
         const fingerprintFileInput = document.getElementById('fingerprintFileInput');
         document.getElementById('btnDrawerPullFingerprint').addEventListener('click', () => {
             closeNavDrawer();
@@ -3324,8 +3687,7 @@
                     continue;
                 }
 
-                // Cek baris di bawah baris nama (misal Baris 11 Samsul -> Baris 12 berisi jam absen)
-                // Setiap kolom yang terisi jam absen pada baris ke-12 dihitung 1
+                // Cek baris jam absen tepat di bawah baris nama (misal Baris 11 Samsul -> Baris 12 berisi jam absen)
                 const nextRow = rows2D[r + 1] || [];
                 let filledAttendanceCols = 0;
                 for (let c = 0; c < nextRow.length; c++) {
@@ -3335,15 +3697,21 @@
                     }
                 }
 
-                // Jika baris jam absen di bawahnya kosong (seperti baris 6, 8, 10, 16, 18), lewati namanya
+                // Jika baris jam absen di bawahnya kosong, jangan tarik data namanya
                 if (filledAttendanceCols === 0) continue;
 
                 if (!seenInFile.has(cleanedName)) {
-                    const item = { name: cleanedName, allowanceDays: filledAttendanceCols };
-                    seenInFile.set(cleanedName, item);
-                    extracted.push(item);
+                    const record = {
+                        name: cleanedName,
+                        allowanceCount: filledAttendanceCols
+                    };
+                    seenInFile.set(cleanedName, record);
+                    extracted.push(record);
                 } else {
-                    seenInFile.get(cleanedName).allowanceDays += filledAttendanceCols;
+                    const existingRec = seenInFile.get(cleanedName);
+                    if (filledAttendanceCols > existingRec.allowanceCount) {
+                        existingRec.allowanceCount = filledAttendanceCols;
+                    }
                 }
             }
 
@@ -3360,19 +3728,19 @@
                 if (typeof XLSX !== 'undefined') {
                     const buffer = await file.arrayBuffer();
                     const workbook = XLSX.read(buffer, { type: 'array' });
-                    // Cari persis sheet "Lap. Log Absen"
-                    const preferredSheetName = workbook.SheetNames.find(
+                    // Baca khusus dari sheet "Lap. Log Absen"
+                    const exactLogAbsenSheet = workbook.SheetNames.find(
                         name => name.trim().toLowerCase() === 'lap. log absen'
-                    ) || workbook.SheetNames.find(
+                    );
+                    const fallbackLogAbsenSheet = workbook.SheetNames.find(
                         name => name.toLowerCase().includes('lap. log absen') || name.toLowerCase().includes('log absen')
                     );
-
-                    if (!preferredSheetName) {
-                        showToast('Sheet "Lap. Log Absen" tidak ditemukan di file Excel', true);
+                    const chosenSheetName = exactLogAbsenSheet || fallbackLogAbsenSheet;
+                    if (!chosenSheetName) {
+                        showToast('Sheet "Lap. Log Absen" tidak ditemukan di dalam file Excel', true);
                         return;
                     }
-
-                    const worksheet = workbook.Sheets[preferredSheetName];
+                    const worksheet = workbook.Sheets[chosenSheetName];
                     targetRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
                 } else {
                     const text = await file.text();
@@ -3381,18 +3749,18 @@
 
                 const validRecords = extractFingerprintRecordsFromRows(targetRows);
                 if (validRecords.length === 0) {
-                    showToast('Tidak ditemukan nama dengan jam absen terisi pada sheet "Lap. Log Absen"', true);
+                    showToast("Tidak ditemukan nama dengan jam absen terisi pada Kolom K (sheet Lap. Log Absen)", true);
                     return;
                 }
 
-                const existingMap = new Map(participantsData.map(p => [p.name, p]));
-                const newCount = validRecords.filter(rec => !existingMap.has(rec.name)).length;
-                const updateCount = validRecords.length - newCount;
+                const existingByName = new Map(participantsData.map(p => [p.name, p]));
+                const newRecordsToAdd = validRecords.filter(rec => !existingByName.has(rec.name));
+                const existingRecordsToUpdate = validRecords.filter(rec => existingByName.has(rec.name));
 
                 openConfirmPopup({
                     title: 'Konfirmasi Tarik Data PingerPrint',
-                    message: `Ditemukan ${validRecords.length} peserta aktif dari sheet "Lap. Log Absen" (${newCount} baru, ${updateCount} diperbarui). Hitungan kolom jam absen baris ke-12 akan masuk ke kolom JMLH Uang Jajan.`,
-                    detail: validRecords.slice(0, 6).map(r => `${r.name} (${r.allowanceDays})`).join(', ') + (validRecords.length > 6 ? ` ... (+${validRecords.length - 6} lainnya)` : ''),
+                    message: `Ditemukan ${validRecords.length} peserta aktif pada sheet "Lap. Log Absen" (${newRecordsToAdd.length} baru, ${existingRecordsToUpdate.length} diperbarui jumlah uang jajannya). Terapkan ke data ${getActiveLocationInfo().label}?`,
+                    detail: validRecords.slice(0, 6).map(r => `${r.name} (${r.allowanceCount} hari)`).join(', ') + (validRecords.length > 6 ? ` ... (+${validRecords.length - 6} lainnya)` : ''),
                     confirmText: `Ya, Tarik (${validRecords.length})`,
                     confirmClass: 'bg-cyan-700 hover:bg-cyan-800 text-white',
                     onConfirm: async () => {
@@ -3405,21 +3773,21 @@
                         try {
                             const baseTime = Date.now();
                             await commitChunkedOperations(validRecords, (batch, rec, idx) => {
-                                const existing = existingMap.get(rec.name);
-                                if (existing) {
-                                    existing.allowanceDays = rec.allowanceDays;
-                                    batch.update(getParticipantDocRef(existing.id), {
-                                        allowanceDays: rec.allowanceDays,
+                                const existingParticipant = existingByName.get(rec.name);
+                                if (existingParticipant) {
+                                    batch.update(getParticipantDocRef(existingParticipant.id), {
+                                        'checks.fingerprintAllowanceCount': rec.allowanceCount,
                                         updatedAt: baseTime + idx,
                                         updatedBy: getCurrentActorLabel()
                                     });
                                 } else {
                                     const deterministicId = makeDeterministicParticipantId(rec.name);
                                     const ref = getParticipantDocRef(deterministicId);
+                                    const initialChecks = getEmptyChecksObject();
+                                    initialChecks.fingerprintAllowanceCount = rec.allowanceCount;
                                     batch.set(ref, {
                                         name: rec.name,
-                                        checks: getEmptyChecksObject(),
-                                        allowanceDays: rec.allowanceDays,
+                                        checks: initialChecks,
                                         ket: '',
                                         ttdDataUrl: '',
                                         createdAt: baseTime + idx,
@@ -3433,9 +3801,8 @@
                                 updatedAt: Date.now(),
                                 updatedBy: getCurrentActorLabel()
                             }, { merge: true });
-                            renderTable([]);
                             setConnectionStatus('ONLINE');
-                            showToast(`${validRecords.length} data Fingerprint & jumlah Uang Jajan berhasil ditarik`);
+                            showToast(`${validRecords.length} data dari sheet Lap. Log Absen berhasil ditarik`);
                         } catch (_) {
                             setConnectionStatus('OFFLINE');
                             showToast("Gagal menyimpan data dari Fingerprint", true);
@@ -3585,13 +3952,16 @@
             if (!currentUser) return;
             setConnectionStatus('SYNCING');
             try {
+                const expectedConfigId = activeTcLocation === 'TC_PUSAT_JAKARTA'
+                    ? 'config'
+                    : `config_${activeTcLocation.toLowerCase()}`;
                 const [metaSnap, partSnap] = await Promise.all([
                     getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'checklist_meta')),
                     getDocs(getParticipantsColRef())
                 ]);
 
                 metaSnap.forEach(d => {
-                    if (d.id === 'config') {
+                    if (d.id === expectedConfigId) {
                         const data = d.data();
                         dailyOrdersData = (data.dailyOrders && typeof data.dailyOrders === 'object') ? data.dailyOrders : {};
                         statusMarksMap = (data.statusMarks && typeof data.statusMarks === 'object') ? data.statusMarks : {};
@@ -3608,7 +3978,6 @@
                         id: docSnap.id,
                         name: (data.name || '').toUpperCase(),
                         checks: data.checks || {},
-                        allowanceDays: typeof data.allowanceDays === 'number' ? data.allowanceDays : 0,
                         ket: data.ket || '',
                         ttdDataUrl: data.ttdDataUrl || '',
                         createdAt: data.createdAt || 0,
@@ -3644,7 +4013,6 @@
                     no: idx + 1,
                     name: p.name,
                     count,
-                    allowanceDays: Number(p.allowanceDays || 0),
                     rate: activeRate,
                     total: count * activeRate,
                     ket: p.ket || '',
@@ -3716,7 +4084,6 @@
                         no: idx + 1,
                         name: p.name,
                         count,
-                        allowanceDays: Number(p.allowanceDays || 0),
                         rate: CATERING_UNIT_RATE,
                         total: count * CATERING_UNIT_RATE,
                         ket: p.ket || '',
@@ -3727,7 +4094,7 @@
                 const currentPeriodText = formatPeriodLabel(periodRange.start, periodRange.end);
 
                 openConfirmPopup({
-                    title: 'Konfirmasi Simpan Arsip Rekapan',
+                    title: `Konfirmasi Simpan Arsip (${getActiveLocationInfo().label})`,
                     message: 'Simpan snapshot data rekapitulasi ke Arsip Rekapan lalu kosongkan semua nama, ceklis, TTD, KET, dan pesanan harian?',
                     detail: `Periode: ${currentPeriodText} • Peserta: ${participantsData.length} • Total: ${formatRupiah(totalChecks * CATERING_UNIT_RATE)}`,
                     confirmText: 'Ya, Simpan & Kosongkan',
@@ -3772,7 +4139,6 @@
                             });
 
                             clearedAfterArchive = true;
-                            hasSeededInitialData = true;
                             previousChecksSnapshot = {};
                             participantsData = [];
                             statusMarksMap = {};
@@ -3866,7 +4232,6 @@
                     id: r.id || `archive_row_${arc.id}_${i}`,
                     name: (r.name || `PESERTA ${i + 1}`).toUpperCase(),
                     checks: checksObj,
-                    allowanceDays: typeof r.allowanceDays === 'number' ? r.allowanceDays : 0,
                     ket: r.ket || '',
                     ttdDataUrl: r.ttdDataUrl || '',
                     createdAt: r.createdAt || (Date.now() + i)
@@ -3939,7 +4304,6 @@
                             batch.set(ref, {
                                 name: resolvedName,
                                 checks: checksObj,
-                                allowanceDays: typeof r.allowanceDays === 'number' ? r.allowanceDays : 0,
                                 ket: r.ket || '',
                                 ttdDataUrl: r.ttdDataUrl || '',
                                 createdAt: baseTime + idx,
@@ -4277,28 +4641,6 @@
             } catch (_) {}
         };
 
-        window.handleSaveAllowanceDays = async function(participantId, inputEl) {
-            if (isViewingArchiveMode && isArchiveReadOnly) return;
-            const parsed = Math.max(0, parseInt(inputEl.value, 10) || 0);
-            inputEl.value = parsed;
-            const target = participantsData.find(p => p.id === participantId);
-            if (target) target.allowanceDays = parsed;
-            renderTable([]);
-            if (!currentUser || isViewingArchiveMode) return;
-            setConnectionStatus('SYNCING');
-            try {
-                await updateDoc(getParticipantDocRef(participantId), {
-                    allowanceDays: parsed,
-                    updatedAt: Date.now(),
-                    updatedBy: getCurrentActorLabel()
-                });
-                setConnectionStatus('ONLINE');
-            } catch (_) {
-                setConnectionStatus('OFFLINE');
-                showToast("Gagal menyimpan jumlah hari uang jajan", true);
-            }
-        };
-
         window.handleDailyOrderChange = function(dayKey, inputEl) {
             if (isViewingArchiveMode && isArchiveReadOnly) return;
             dailyOrdersData[dayKey] = inputEl.value;
@@ -4436,7 +4778,6 @@
                     batch.set(ref, {
                         name,
                         checks: getEmptyChecksObject(),
-                        allowanceDays: 0,
                         ket: '',
                         ttdDataUrl: '',
                         createdAt: baseTime + idx,
@@ -4496,67 +4837,7 @@
             }
         });
 
-        document.getElementById('btnDeleteAllActiveRows').addEventListener('click', () => {
-            closeNavDrawer();
-            if (isViewingArchiveMode && isArchiveReadOnly) {
-                showToast("Arsip dibuka dalam mode Lihat Saja (Read-Only)", true);
-                return;
-            }
-            if (participantsData.length === 0) {
-                showToast("Belum ada baris peserta yang tersimpan", true);
-                return;
-            }
-
-            openConfirmPopup({
-                title: 'Hapus Semua Baris Peserta?',
-                message: 'Semua nama peserta beserta ceklis, TTD, dan keterangan pada periode aktif akan dihapus permanen.',
-                detail: `Total yang akan dihapus: ${participantsData.length} Peserta`,
-                confirmText: 'Ya, Hapus Semua',
-                confirmClass: 'bg-rose-600 hover:bg-rose-700 text-white',
-                onConfirm: async () => {
-                    if (isViewingArchiveMode) {
-                        participantsData = [];
-                        statusMarksMap = {};
-                        renderTable([]);
-                        showToast("Semua baris pada arsip ini dihapus");
-                        return;
-                    }
-                    if (!currentUser) return;
-                    setConnectionStatus('SYNCING');
-                    try {
-                        await commitChunkedOperations(participantsData, (batch, p) => {
-                            batch.delete(getParticipantDocRef(p.id));
-                        });
-                        await setDoc(getMetaDocRef(), {
-                            statusMarks: {},
-                            updatedAt: Date.now(),
-                            updatedBy: getCurrentActorLabel()
-                        }, { merge: true });
-                        previousChecksSnapshot = {};
-                        statusMarksMap = {};
-                        participantsData = [];
-                        renderTable([]);
-                        setConnectionStatus('ONLINE');
-                        showToast("Semua baris peserta berhasil dihapus");
-                    } catch (_) {
-                        setConnectionStatus('OFFLINE');
-                        showToast("Gagal menghapus semua baris peserta", true);
-                    }
-                }
-            });
-        });
-
         const resetModal = document.getElementById('resetModal');
-        document.getElementById('btnOpenResetModal')?.addEventListener('click', () => {
-            closeNavDrawer();
-            if (participantsData.length === 0) {
-                showToast("Belum ada data peserta untuk di-reset", true);
-                return;
-            }
-            resetModal.classList.remove('hidden');
-            resetModal.classList.add('flex');
-        });
-
         const closeResetModal = () => {
             resetModal.classList.add('hidden');
             resetModal.classList.remove('flex');
@@ -4645,8 +4926,8 @@
             if (!headerRow || !subHeaderRow || !tbody || !tfoot) return;
 
             const isAllowanceTab = activeAdminSubTab === 'UANG_JAJAN';
-            const activeRate = isAllowanceTab ? ALLOWANCE_UNIT_RATE : CATERING_UNIT_RATE;
-            const rateColumnHeader = isAllowanceTab ? 'RP 15.000' : 'RP 13.000';
+            const activeRate = getActiveUnitRate();
+            const rateColumnHeader = `RP ${activeRate.toLocaleString('id-ID')}`;
 
             let headerHtml = `
                 <th rowspan="2" class="sticky-corner-no bg-slate-100 text-slate-700 w-[24px] min-w-[24px] max-w-[24px] py-1.5 px-0 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
@@ -4706,7 +4987,7 @@
                 : `onclick="openQuickActionMenu()" title="Klik untuk buka Menu Aksi Cepat (Izin, Sakit, Alfa, Resign, Lulus)" class="sticky-header bg-slate-100 text-slate-700 w-[72px] min-w-[72px] py-1 px-1.5 text-[9px] sm:text-[10px] text-left border-b border-slate-300 cursor-pointer hover:bg-slate-200 transition"`;
 
             headerHtml += `
-                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[44px] min-w-[44px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
+                <th rowspan="2" class="sticky-header print-jmlh-col bg-slate-100 text-slate-700 w-[34px] min-w-[34px] py-1 px-0.5 text-[9px] sm:text-[10px] text-center border-b border-r border-slate-300">
                     JMLH
                 </th>
                 <th rowspan="2" class="sticky-header print-rate-col bg-slate-100 text-slate-700 w-[58px] min-w-[58px] py-1 px-1 text-[9px] sm:text-[10px] text-right border-b border-r border-slate-300 whitespace-nowrap">
@@ -4734,7 +5015,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${emptyColSpan}" class="py-10 px-4 text-center text-slate-500">
-                            <p class="text-xs font-semibold text-slate-600">Belum ada peserta atau nama tidak ditemukan.</p>
+                            <p class="text-xs font-semibold text-slate-600">Belum ada peserta pada ${escapeHtml(getActiveLocationInfo().label)} atau nama tidak ditemukan.</p>
                         </td>
                     </tr>
                 `;
@@ -4802,7 +5083,7 @@
                 });
 
                 rowCheckedCount = isAllowanceTab
-                    ? Number(participant.allowanceDays || 0)
+                    ? getParticipantAllowanceDayCount(participant.checks)
                     : DAY_COLUMNS.reduce((c, col) => c + (participant.checks?.[col.slot1] ? 1 : 0) + (participant.checks?.[col.slot2] ? 1 : 0), 0);
 
                 const rowTotalAmount = rowCheckedCount * activeRate;
@@ -4811,28 +5092,6 @@
                 const ttdContent = participant.ttdDataUrl
                     ? `<img src="${participant.ttdDataUrl}" alt="TTD ${escapeHtml(participant.name)}" onclick="openTtdPreview('${escapeHtml(participant.name).replace(/'/g, "\\'")}', '${participant.ttdDataUrl}')" class="h-4.5 w-auto max-w-[50px] mx-auto object-contain cursor-pointer">`
                     : `<span class="text-[9px] text-slate-400">${idx + 1}. ...</span>`;
-
-                const jmlhCellHtml = isAllowanceTab
-                    ? `
-                        <td class="print-jmlh-col w-[44px] min-w-[44px] py-1 px-0.5 text-center border-r border-slate-200">
-                            <input 
-                                type="number" 
-                                min="0" 
-                                step="1"
-                                inputmode="numeric"
-                                value="${rowCheckedCount}"
-                                ${isViewingArchiveMode && isArchiveReadOnly ? 'disabled' : ''}
-                                onblur="handleSaveAllowanceDays('${participant.id}', this)"
-                                onkeydown="if(event.key==='Enter'){this.blur();}"
-                                class="w-full text-center font-bold text-blue-900 bg-blue-50/60 hover:bg-white focus:bg-white border border-blue-200 focus:border-blue-600 rounded px-0.5 py-0.5 text-[10px] sm:text-[11px] focus:outline-none"
-                            >
-                        </td>
-                    `
-                    : `
-                        <td class="print-jmlh-col w-[34px] min-w-[34px] py-1 px-0.5 text-center font-bold text-blue-900 text-[10px] sm:text-[11px] border-r border-slate-200">
-                            ${rowCheckedCount}
-                        </td>
-                    `;
 
                 bodyHtml += `
                     <tr class="${rowBg} hover:bg-amber-50/60 transition-colors">
@@ -4857,7 +5116,9 @@
                             </div>
                         </td>
                         ${cellsHtml}
-                        ${jmlhCellHtml}
+                        <td class="print-jmlh-col w-[34px] min-w-[34px] py-1 px-0.5 text-center font-bold text-blue-900 text-[10px] sm:text-[11px] border-r border-slate-200">
+                            ${rowCheckedCount}
+                        </td>
                         <td class="print-rate-col w-[58px] min-w-[58px] py-1 px-1 text-right font-medium text-slate-700 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-200">
                             ${formatRupiah(activeRate)}
                         </td>
@@ -4884,28 +5145,54 @@
 
             tbody.innerHTML = bodyHtml;
 
-            const summaryRowLabel = isAllowanceTab ? 'TOTAL' : 'REKAP HARIAN';
-
-            let rekapHtml = `
-                <tr>
-                    <td class="w-[24px] min-w-[24px] max-w-[24px] bg-slate-200 py-1.5 px-0 text-center text-[9px] border-r border-slate-300">-</td>
-                    <td class="w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-slate-200 py-1.5 px-1.5 text-left font-bold text-slate-900 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-slate-300">
-                        ${summaryRowLabel}
-                    </td>
-            `;
-
+            let totalOrdersSum = 0;
+            let summaryRowLabel = "REKAP HARIAN";
+            let summaryRowClass = "sticky-footer-row-1";
             let ordersRowHtml = '';
+
             if (!isAllowanceTab) {
+                summaryRowClass = "sticky-footer-row-1";
                 ordersRowHtml = `
-                    <tr class="bg-amber-50/90">
+                    <tr class="bg-amber-50/90 sticky-footer-row-2">
                         <td class="w-[24px] min-w-[24px] max-w-[24px] bg-amber-100 py-1.5 px-0 text-center text-[9px] border-r border-amber-200">-</td>
                         <td class="w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-amber-100 py-1.5 px-1.5 text-left font-extrabold text-amber-950 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-amber-200">
                             PESANAN HARIAN
                         </td>
                 `;
+            } else {
+                summaryRowClass = "sticky-footer-row-2";
+            }
 
-                let totalOrdersSum = 0;
+            let rekapHtml = `
+                <tr class="${summaryRowClass}">
+                    <td class="sticky-footer-col-no w-[24px] min-w-[24px] max-w-[24px] bg-slate-200 py-1.5 px-0 text-center text-[9px] border-r border-slate-300">-</td>
+                    <td class="sticky-footer-col-name w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-slate-200 py-1.5 px-1.5 text-left font-bold text-slate-900 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-slate-300">
+                        ${summaryRowLabel}
+                    </td>
+            `;
 
+            if (!isAllowanceTab) {
+                summaryRowClass = "sticky-footer-row-1";
+                ordersRowHtml = `
+                    <tr class="bg-amber-50/90 sticky-footer-row-2">
+                        <td class="sticky-footer-col-no w-[24px] min-w-[24px] max-w-[24px] bg-amber-100 py-1.5 px-0 text-center text-[9px] border-r border-amber-200">-</td>
+                        <td class="sticky-footer-col-name w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-amber-100 py-1.5 px-1.5 text-left font-extrabold text-amber-950 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-amber-200">
+                            PESANAN HARIAN
+                        </td>
+                `;
+            } else {
+                summaryRowClass = "sticky-footer-row-2";
+            }
+
+            rekapHtml = `
+                <tr class="${summaryRowClass}">
+                    <td class="sticky-footer-col-no w-[24px] min-w-[24px] max-w-[24px] bg-slate-200 py-1.5 px-0 text-center text-[9px] border-r border-slate-300">-</td>
+                    <td class="sticky-footer-col-name w-[108px] min-w-[108px] max-w-[130px] sm:w-[145px] sm:min-w-[145px] sm:max-w-[175px] bg-slate-200 py-1.5 px-1.5 text-left font-bold text-slate-900 uppercase text-[9.5px] sm:text-[10.5px] truncate border-r border-slate-300">
+                        ${summaryRowLabel}
+                    </td>
+            `;
+
+            if (!isAllowanceTab) {
                 DAY_COLUMNS.forEach(col => {
                     const rawOrderVal = dailyOrdersData[col.key] || '';
                     totalOrdersSum += parseOrderCellValue(rawOrderVal);
@@ -4941,7 +5228,7 @@
                     <td class="print-ttd-col py-1 px-0.5 bg-amber-100 border-r border-amber-200"></td>
                     <td class="py-1 px-0.5 bg-amber-100"></td>
                 </tr>
-                `;
+            `;
             }
 
             if (!isAllowanceTab) {
@@ -4959,7 +5246,7 @@
 
             rekapHtml += `
                 <td class="print-jmlh-col py-1 px-0.5 text-center font-bold text-emerald-900 bg-emerald-100 text-[10px] sm:text-[11px] border-r border-slate-300">
-                    ${isAllowanceTab ? filteredParticipants.reduce((sum, p) => sum + Number(p.allowanceDays || 0), 0) : grandTotalChecks}
+                    ${isAllowanceTab ? participantsData.reduce((sum, p) => sum + getParticipantAllowanceDayCount(p.checks), 0) : grandTotalChecks}
                 </td>
                 <td class="print-rate-col py-1 px-1 text-right font-bold text-slate-800 bg-slate-200 text-[9.5px] sm:text-[10.5px] whitespace-nowrap border-r border-slate-300">
                     ${formatRupiah(activeRate)}
@@ -4989,6 +5276,7 @@
         }
 
         lucide.createIcons();
+        updateLocationBadgesUI();
         syncPeriodInputsUI();
         updateRoleView();
         initAuthAndRealtime();
